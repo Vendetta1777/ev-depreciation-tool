@@ -3,14 +3,14 @@ import CountUp from '../CountUp'
 import { RESEARCH, EV_ANNUAL_DEPRECIATION_PREMIUM } from '../../data/constants'
 
 const STATS = [
-  { value: RESEARCH.datasetSize, label: 'Vehicles Analyzed' },
-  { value: RESEARCH.rSquared, decimals: 3, prefix: 'R² = ', label: 'Model Accuracy' },
-  { value: EV_ANNUAL_DEPRECIATION_PREMIUM * 100, decimals: 1, suffix: '%', label: 'Faster EV Depreciation' },
-  { value: RESEARCH.papersReviewed, label: 'Research Papers' },
+  { value: RESEARCH.datasetSize, label: 'Cars analyzed' },
+  { value: RESEARCH.rSquared, decimals: 3, prefix: 'R² ', label: 'Model accuracy' },
+  { value: EV_ANNUAL_DEPRECIATION_PREMIUM * 100, decimals: 1, suffix: '%', label: 'Faster EV drop / yr' },
+  { value: RESEARCH.papersReviewed, label: 'Papers reviewed' },
 ]
 
 /**
- * Stats strip — four research figures with count-up on scroll.
+ * Stats strip: four big research numbers that count up as they scroll in.
  */
 export default function StatsStrip() {
   return (
@@ -29,7 +29,7 @@ export default function StatsStrip() {
             decimals={s.decimals}
             prefix={s.prefix}
             suffix={s.suffix}
-            className="block text-3xl font-bold text-teal sm:text-4xl"
+            className="block text-4xl font-extrabold tracking-tight text-teal sm:text-5xl"
           />
           <p className="mt-2 text-sm text-ink-muted">{s.label}</p>
         </motion.div>

@@ -159,8 +159,8 @@ export function getRecommendation(leaseNPV, buyNPV) {
   const advantage = Math.abs(buyNPV - leaseNPV)
   const verdict = leaseWins ? 'LEASE' : 'BUY'
   const reasoning = leaseWins
-    ? `Leasing comes out ${usd(advantage)} cheaper over 5 years in present-value terms. The subsidized lease rate outweighs the resale value you'd keep by owning.`
-    : `Buying comes out ${usd(advantage)} cheaper over 5 years in present-value terms. Strong resale value and a pricier lease rate tip the math toward ownership.`
+    ? `Leasing saves you about ${usd(advantage)} over five years once you factor in the time value of money. The cheap lease rate beats the resale value you would pocket by buying.`
+    : `Buying saves you about ${usd(advantage)} over five years once you factor in the time value of money. Solid resale value and a pricier lease tilt this one toward owning.`
 
   return { verdict, advantage, leaseNPV, buyNPV, reasoning }
 }
@@ -208,6 +208,23 @@ export function valueProjection(vehicleData, years = NPV.horizonYears) {
 }
 
 /**
+ * First-year depreciation as a rate: total dollars lost in year one, plus the
+ * per-month and per-day pace. Year one is the steepest, so this is the figure
+ * people feel most.
+ */
+export function depreciationRate(vehicleData) {
+  const { msrp = 0 } = vehicleData
+  const { retention5 } = resolveTier(vehicleData)
+  const annualFactor = Math.pow(retention5, 1 / NPV.horizonYears)
+  const firstYearLoss = msrp * (1 - annualFactor)
+  return {
+    perYear: firstYearLoss,
+    perMonth: firstYearLoss / 12,
+    perDay: firstYearLoss / 365,
+  }
+}
+
+/**
  * financials — buy/lease card figures plus a year-by-year cumulative cost series.
  * Card values are nominal (out-of-pocket) except `npv`, which is present value.
  */
@@ -217,8 +234,8 @@ export function financials(vehicleData) {
   const annualLease = b.monthlyPayment * 12
 
   // Gross cash outlay (before recovering resale). Buying requires more cash out;
-  // the residual is shown separately as a credit, and NPV is the tie-breaker —
-  // this keeps every visible cost consistent with the NPV-based verdict rather
+  // the residual is shown separately as a credit, and NPV is the tie-breaker.
+  // This keeps every visible cost consistent with the NPV-based verdict rather
   // than netting resale into a total that could undercut it.
   const buyGross = (vehicleData.msrp ?? 0) + b.annualOps * years
   const leaseTotal = annualLease * years + b.annualOps * years
@@ -268,5 +285,6 @@ export function runProjection(vehicleData) {
     comparison: comparisonCurve(vehicleData),
     projectionTable: valueProjection(vehicleData),
     money: financials(vehicleData),
+    rate: depreciationRate(vehicleData),
   }
 }

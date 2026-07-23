@@ -22,9 +22,9 @@ const CheckIcon = (props) => (
 )
 
 const STEPS = [
-  { icon: CarIcon, title: '1. Enter Your Vehicle', desc: 'Fuel type, make, model, year, mileage, and price. Takes 30 seconds.' },
-  { icon: ChartIcon, title: '2. We Run The Numbers', desc: 'Research-derived depreciation curves and a 5-year NPV analysis, instantly.' },
-  { icon: CheckIcon, title: '3. Get Your Recommendation', desc: 'A clear buy-vs-lease verdict with the dollar advantage spelled out.' },
+  { icon: CarIcon, title: '1. Tell us your car', desc: 'Fuel type, make, model, year, miles, and price. That is it.' },
+  { icon: ChartIcon, title: '2. We crunch it', desc: 'Depreciation curves and a five-year money comparison, right away.' },
+  { icon: CheckIcon, title: '3. Get a straight answer', desc: 'Buy or lease, and how many dollars it saves you.' },
 ]
 
 export default function HowItWorks() {
@@ -37,9 +37,10 @@ export default function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.45, delay: i * 0.12 }}
-          className="relative rounded-2xl border border-border bg-surface-raised/60 p-7"
+          whileHover={{ y: -6 }}
+          className="group relative rounded-2xl border border-border bg-surface-raised/60 p-7 transition-all duration-300 hover:border-teal/60 hover:shadow-[0_0_35px_-10px_rgba(0,180,216,0.55)]"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10 text-teal">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10 text-teal transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
             <s.icon className="h-6 w-6" />
           </div>
           <h3 className="mt-5 text-lg font-semibold text-ink">{s.title}</h3>

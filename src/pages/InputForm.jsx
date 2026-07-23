@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Select, NumberInput } from '../components/FormControls'
+import SearchableSelect from '../components/SearchableSelect'
 import {
   FUEL_TYPES,
   MODEL_YEARS,
@@ -36,7 +37,6 @@ export default function InputForm() {
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
 
-  // Chained option lists.
   const makeOptions = form.fuelType ? makesFor(form.fuelType) : []
   const modelOptions = form.fuelType && form.make
     ? modelsFor(form.fuelType, form.make).map((v) => v.model)
@@ -44,7 +44,7 @@ export default function InputForm() {
 
   // Update a field; reset dependent fields when a parent changes.
   function set(field, value) {
-    const touched = [field] // fields whose errors should clear
+    const touched = [field]
     setForm((prev) => {
       const next = { ...prev, [field]: value }
       if (field === 'fuelType') {
@@ -61,7 +61,7 @@ export default function InputForm() {
       if (field === 'model') {
         const v = findVehicle(next.fuelType, next.make, value)
         if (v) {
-          next.msrp = String(v.msrp) // pre-fill, user can override
+          next.msrp = String(v.msrp)
           touched.push('msrp')
         }
       }
@@ -76,22 +76,22 @@ export default function InputForm() {
 
   function validate() {
     const e = {}
-    if (!form.fuelType) e.fuelType = 'Select a fuel type.'
-    if (!form.make) e.make = 'Select a make.'
-    if (!form.model) e.model = 'Select a model.'
-    if (!form.year) e.year = 'Select a model year.'
+    if (!form.fuelType) e.fuelType = 'Pick a fuel type first.'
+    if (!form.make) e.make = 'Pick a make.'
+    if (!form.model) e.model = 'Pick a model.'
+    if (!form.year) e.year = 'Which year is it?'
 
     const mileage = Number(form.mileage)
-    if (form.mileage === '' || Number.isNaN(mileage)) e.mileage = 'Enter current mileage.'
-    else if (mileage < 0 || mileage > 300000) e.mileage = 'Enter a value between 0 and 300,000.'
+    if (form.mileage === '' || Number.isNaN(mileage)) e.mileage = 'How many miles are on it?'
+    else if (mileage < 0 || mileage > 300000) e.mileage = 'That should be between 0 and 300,000.'
 
     const annual = Number(form.annualMiles)
-    if (form.annualMiles === '' || Number.isNaN(annual)) e.annualMiles = 'Enter annual miles.'
-    else if (annual <= 0 || annual > 100000) e.annualMiles = 'Enter a value between 1 and 100,000.'
+    if (form.annualMiles === '' || Number.isNaN(annual)) e.annualMiles = 'Roughly how far do you drive a year?'
+    else if (annual <= 0 || annual > 100000) e.annualMiles = 'That should be between 1 and 100,000.'
 
     const msrp = Number(form.msrp)
-    if (form.msrp === '' || Number.isNaN(msrp)) e.msrp = 'Enter a purchase price.'
-    else if (msrp < 5000 || msrp > 500000) e.msrp = 'Enter a value between $5,000 and $500,000.'
+    if (form.msrp === '' || Number.isNaN(msrp)) e.msrp = 'What did it cost new?'
+    else if (msrp < 5000 || msrp > 500000) e.msrp = 'That should be between $5,000 and $500,000.'
 
     setErrors(e)
     return Object.keys(e).length === 0
@@ -113,7 +113,6 @@ export default function InputForm() {
       age: Math.max(0, new Date().getFullYear() - Number(form.year)),
     }
 
-    // Brief pause so the loading state reads as intentional work.
     await new Promise((r) => setTimeout(r, 900))
     navigate('/results', { state: { vehicle } })
   }
@@ -121,11 +120,8 @@ export default function InputForm() {
   return (
     <section className="mx-auto max-w-2xl px-6 py-16">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-3xl font-bold text-ink sm:text-4xl">Your vehicle</h1>
-        <p className="mt-2 text-ink-muted">
-          Tell us about the car. We&apos;ll model its depreciation and run the
-          buy-vs-lease numbers.
-        </p>
+        <h1 className="text-3xl font-bold text-ink sm:text-4xl">Tell us about your car</h1>
+        <p className="mt-2 text-ink-muted">Just the basics. We will handle the math.</p>
       </motion.div>
 
       <motion.form
@@ -142,27 +138,27 @@ export default function InputForm() {
             value={form.fuelType}
             onChange={(v) => set('fuelType', v)}
             options={FUEL_TYPES}
-            placeholder="Select fuel type"
+            placeholder="Electric or gas?"
             error={errors.fuelType}
           />
         </motion.div>
 
         <motion.div variants={item} className="grid gap-6 sm:grid-cols-2">
-          <Select
+          <SearchableSelect
             label="Make"
             value={form.make}
             onChange={(v) => set('make', v)}
             options={makeOptions}
-            placeholder={form.fuelType ? 'Select make' : 'Pick fuel type first'}
+            placeholder={form.fuelType ? 'Type to search' : 'Pick a fuel type first'}
             error={errors.make}
             disabled={!form.fuelType}
           />
-          <Select
+          <SearchableSelect
             label="Model"
             value={form.model}
             onChange={(v) => set('model', v)}
             options={modelOptions}
-            placeholder={form.make ? 'Select model' : 'Pick make first'}
+            placeholder={form.make ? 'Type to search' : 'Pick a make first'}
             error={errors.model}
             disabled={!form.make}
           />
@@ -170,18 +166,18 @@ export default function InputForm() {
 
         <motion.div variants={item}>
           <Select
-            label="Model year"
+            label="Year"
             value={form.year}
             onChange={(v) => set('year', v)}
             options={MODEL_YEARS.map((y) => ({ value: String(y), label: String(y) }))}
-            placeholder="Select year"
+            placeholder="Model year"
             error={errors.year}
           />
         </motion.div>
 
         <motion.div variants={item} className="grid gap-6 sm:grid-cols-2">
           <NumberInput
-            label="Current mileage"
+            label="Miles on it now"
             value={form.mileage}
             onChange={(v) => set('mileage', v)}
             placeholder="0"
@@ -189,7 +185,7 @@ export default function InputForm() {
             error={errors.mileage}
           />
           <NumberInput
-            label="Annual miles driven"
+            label="Miles you drive a year"
             value={form.annualMiles}
             onChange={(v) => set('annualMiles', v)}
             placeholder="12000"
@@ -200,7 +196,7 @@ export default function InputForm() {
 
         <motion.div variants={item}>
           <NumberInput
-            label="Purchase price (MSRP)"
+            label="What it cost new"
             value={form.msrp}
             onChange={(v) => set('msrp', v)}
             placeholder="40000"
@@ -225,11 +221,11 @@ export default function InputForm() {
                   className="flex items-center gap-2"
                 >
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-navy/40 border-t-navy" />
-                  Calculating…
+                  Crunching the numbers…
                 </motion.span>
               ) : (
                 <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  Calculate projection →
+                  Show me the numbers →
                 </motion.span>
               )}
             </AnimatePresence>

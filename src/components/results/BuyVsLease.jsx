@@ -8,13 +8,14 @@ import {
   Tooltip,
   Legend,
 } from 'recharts'
+import { motion } from 'framer-motion'
 import { usd } from '../../utils/format'
 
 const BUY_COLOR = '#00b4d8'
 const LEASE_COLOR = '#f59e0b'
 
 /**
- * Section 4 — buy vs lease cards + cumulative-cost bar chart.
+ * Section 4 — buy vs lease cards plus a cumulative-spend bar chart.
  */
 export default function BuyVsLease({ money, verdict }) {
   const buyWins = verdict === 'BUY'
@@ -22,29 +23,19 @@ export default function BuyVsLease({ money, verdict }) {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
-        <ModeCard
-          title="Buy"
-          data={money.buy}
-          winner={buyWins}
-          accent={BUY_COLOR}
-        />
-        <ModeCard
-          title="Lease"
-          data={money.lease}
-          winner={!buyWins}
-          accent={LEASE_COLOR}
-        />
+        <ModeCard title="Buy" data={money.buy} winner={buyWins} accent={BUY_COLOR} />
+        <ModeCard title="Lease" data={money.lease} winner={!buyWins} accent={LEASE_COLOR} />
       </div>
 
       <p className="text-xs text-ink-muted">
-        The winner is decided by <span className="text-ink">net present value</span> —
-        future dollars (including resale) are discounted to today. Nominal totals
-        can point the other way, which is exactly what NPV is built to catch.
+        The call comes down to <span className="text-ink">present value</span>: future
+        dollars, resale included, are worth less today than the plain totals suggest.
+        That gap is the whole reason to run the numbers this way.
       </p>
 
       <div className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-6">
         <p className="mb-4 text-sm font-medium text-ink-muted">
-          Cumulative cash spent by year
+          How much you have spent, year by year
         </p>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={money.cumulative} margin={{ top: 4, right: 12, left: 0, bottom: 4 }}>
@@ -90,11 +81,21 @@ export default function BuyVsLease({ money, verdict }) {
 
 function ModeCard({ title, data, winner, accent }) {
   return (
-    <div
-      className={`rounded-2xl border p-6 transition ${
+    <motion.div
+      animate={
         winner
-          ? 'border-teal/60 bg-navy-700 shadow-[0_0_30px_-8px_rgba(0,180,216,0.5)]'
-          : 'border-border bg-surface-raised/50 opacity-80'
+          ? {
+              boxShadow: [
+                '0 0 0 1px rgba(0,180,216,0.5), 0 0 18px -6px rgba(0,180,216,0.4)',
+                '0 0 0 1px rgba(0,180,216,0.8), 0 0 34px -4px rgba(0,180,216,0.7)',
+                '0 0 0 1px rgba(0,180,216,0.5), 0 0 18px -6px rgba(0,180,216,0.4)',
+              ],
+            }
+          : {}
+      }
+      transition={winner ? { duration: 2.6, repeat: Infinity, ease: 'easeInOut' } : {}}
+      className={`rounded-2xl border p-6 ${
+        winner ? 'border-teal/60 bg-navy-700' : 'border-border bg-surface-raised/50 opacity-80'
       }`}
     >
       <div className="flex items-center justify-between">
@@ -104,21 +105,18 @@ function ModeCard({ title, data, winner, accent }) {
             className="rounded-full px-3 py-1 text-xs font-semibold text-navy"
             style={{ background: accent }}
           >
-            Recommended
+            Better deal
           </span>
         )}
       </div>
 
       <dl className="mt-5 space-y-3">
-        <Line label="Monthly cost" value={usd(data.monthly)} />
-        <Line label="5-year cash outlay" value={usd(data.total)} />
-        <Line
-          label="Residual value recovered"
-          value={data.residual ? usd(data.residual) : '—'}
-        />
-        <Line label="Net present value (NPV)" value={usd(data.npv)} strong />
+        <Line label="Per month" value={usd(data.monthly)} />
+        <Line label="Spent over 5 years" value={usd(data.total)} />
+        <Line label="Money back at sale" value={data.residual ? usd(data.residual) : 'None'} />
+        <Line label="In today's dollars" value={usd(data.npv)} strong />
       </dl>
-    </div>
+    </motion.div>
   )
 }
 

@@ -39,15 +39,55 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--color-navy);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Layered navy with faint teal glows top-left and bottom-right for depth. */
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(60rem 40rem at 12% -10%, rgba(0, 180, 216, 0.08), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 110%, rgba(0, 144, 179, 0.07), transparent 55%);
+  background-attachment: fixed;
 }
 
 /* Tabular figures for the big terminal-style numbers */
 .tabular {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
+}
+
+/* Marquee ticker: content is duplicated, so -50% loops seamlessly. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+/* Gentle pulsing gradient for the results verdict banner. */
+@keyframes verdict-pulse {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+.verdict-pulse {
+  background-size: 200% 200%;
+  animation: verdict-pulse 6s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .verdict-pulse {
+    animation: none;
+  }
 }

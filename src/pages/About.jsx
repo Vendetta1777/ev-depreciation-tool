@@ -11,13 +11,13 @@ const pct = (f, d = 1) => `${(f * 100).toFixed(d)}%`
 
 const KEY_FINDINGS = [
   { value: RESEARCH.rSquared.toFixed(3), label: 'Model accuracy (R²)' },
-  { value: pct(VALUE_RETENTION.ev), label: 'EV 5-yr retention' },
-  { value: pct(VALUE_RETENTION.ice), label: 'ICE 5-yr retention' },
-  { value: pct(VALUE_RETENTION.tesla), label: 'Tesla retention' },
+  { value: pct(VALUE_RETENTION.ev), label: 'EV keeps after 5 yrs' },
+  { value: pct(VALUE_RETENTION.ice), label: 'Gas keeps after 5 yrs' },
+  { value: pct(VALUE_RETENTION.tesla), label: 'Tesla keeps' },
   { value: pct(VALUE_RETENTION.budgetEv), label: 'Budget EV (<$35k)' },
   { value: pct(VALUE_RETENTION.luxuryEv), label: 'Luxury EV (>$50k)' },
-  { value: `${(EV_ANNUAL_DEPRECIATION_PREMIUM * 100).toFixed(1)}%`, label: 'Faster EV depreciation / yr' },
-  { value: RESEARCH.datasetSize.toLocaleString(), label: 'Vehicles analyzed' },
+  { value: `${(EV_ANNUAL_DEPRECIATION_PREMIUM * 100).toFixed(1)}%`, label: 'Faster EV drop / yr' },
+  { value: RESEARCH.datasetSize.toLocaleString(), label: 'Cars in the study' },
 ]
 
 function Block({ children, delay = 0 }) {
@@ -38,45 +38,44 @@ export default function About() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-sm font-medium uppercase tracking-widest text-teal">The research</p>
+        <p className="text-sm font-medium uppercase tracking-widest text-teal">The backstory</p>
         <h1 className="mt-2 text-4xl font-bold text-ink sm:text-5xl">
-          The science behind the numbers
+          Why I built this
         </h1>
         <p className="mt-5 text-lg text-ink-muted">
-          EV Depreciation Tool turns an IEEE research paper into a projection you
-          can use. Electric vehicles lose value on a different curve than gas
-          cars — and that gap changes the buy-vs-lease math. This tool makes that
-          concrete for your specific vehicle.
+          I kept hearing that electric cars lose value fast, but nobody could tell
+          me how fast, or whether that meant I should buy or lease one. So I pulled
+          the data and wrote a research paper on it. This tool is that paper, turned
+          into something you can actually poke at with your own car.
         </p>
       </motion.div>
 
-      {/* Dataset + models */}
       <Block>
-        <h2 className="text-2xl font-semibold text-ink">Dataset &amp; models</h2>
+        <h2 className="text-2xl font-semibold text-ink">The data and the models</h2>
         <p className="mt-3 text-ink-muted">
-          The study analyzed{' '}
-          <span className="font-semibold text-ink">{RESEARCH.datasetSize.toLocaleString()} vehicles</span>{' '}
-          using two ensemble machine-learning models — <span className="text-ink">Random Forest</span>{' '}
-          and <span className="text-ink">XGBoost</span> — to predict resale value from
-          vehicle attributes. The best model reached an accuracy of{' '}
-          <span className="font-semibold text-ink">R² = {RESEARCH.rSquared.toFixed(3)}</span>,
-          drawing on {RESEARCH.papersReviewed} surveyed research papers.
+          I worked with a dataset of about{' '}
+          <span className="font-semibold text-ink">{RESEARCH.datasetSize.toLocaleString()} cars</span>{' '}
+          and trained two models to predict resale value:{' '}
+          <span className="text-ink">Random Forest</span> and{' '}
+          <span className="text-ink">XGBoost</span>. The better one got an accuracy of{' '}
+          <span className="font-semibold text-ink">R² {RESEARCH.rSquared.toFixed(3)}</span>, which
+          is pretty tight. I read through {RESEARCH.papersReviewed} papers along the way to
+          sanity-check what I was seeing.
         </p>
         <p className="mt-3 text-ink-muted">
-          The models agree on what matters most:{' '}
+          Both models pointed at the same few things.{' '}
           {DEPRECIATION_DRIVERS.map((d, i) => (
             <span key={d.key}>
               {i > 0 && ', '}
               <span className="text-ink">{d.label}</span> ({pct(d.importance)})
             </span>
           ))}{' '}
-          dominate the depreciation signal.
+          do most of the work. Mileage, honestly, barely mattered.
         </p>
       </Block>
 
-      {/* Key findings grid */}
       <Block>
-        <h2 className="text-2xl font-semibold text-ink">Key findings</h2>
+        <h2 className="text-2xl font-semibold text-ink">The numbers that stuck with me</h2>
         <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {KEY_FINDINGS.map((f) => (
             <div key={f.label} className="rounded-2xl border border-border bg-surface-raised/60 p-5 text-center">
@@ -87,59 +86,55 @@ export default function About() {
         </div>
       </Block>
 
-      {/* Methodology */}
       <Block>
-        <h2 className="text-2xl font-semibold text-ink">Methodology</h2>
+        <h2 className="text-2xl font-semibold text-ink">How the math works</h2>
         <dl className="mt-4 space-y-5">
           <div>
-            <dt className="font-semibold text-ink">Depreciation curves</dt>
+            <dt className="font-semibold text-ink">The depreciation curve</dt>
             <dd className="mt-1 text-ink-muted">
-              Each vehicle is placed into a retention tier (Tesla, luxury EV,
-              budget EV, EV average, or ICE) from the research. That 5-year
-              retention implies a constant annual decay rate, which we project
-              forward year by year to draw the curve and estimate resale value.
+              Every car falls into a bucket from the study: Tesla, luxury EV, budget
+              EV, average EV, or gas. Each bucket has a five-year retention number,
+              and I use that to work out a steady yearly drop and draw the curve
+              forward.
             </dd>
           </div>
           <div>
-            <dt className="font-semibold text-ink">Net present value (NPV)</dt>
+            <dt className="font-semibold text-ink">Buy vs lease (NPV)</dt>
             <dd className="mt-1 text-ink-muted">
-              Buying and leasing are compared as 5-year costs in <em>today&apos;s</em>{' '}
-              dollars. Future cash flows — lease payments, maintenance, fuel, and
-              the resale value you recover by owning — are discounted back to the
-              present so the two options can be compared on equal footing.
+              I compare buying and leasing as five-year costs, but in today&apos;s
+              dollars. Lease payments, upkeep, fuel, and the resale you get back from
+              owning all get discounted back to the present, so the two options line
+              up fairly.
             </dd>
           </div>
           <div>
-            <dt className="font-semibold text-ink">The {pct(NPV.discountRate, 0)} discount rate</dt>
+            <dt className="font-semibold text-ink">Why {pct(NPV.discountRate, 0)}</dt>
             <dd className="mt-1 text-ink-muted">
-              A {pct(NPV.discountRate, 0)} annual discount rate represents a
-              household&apos;s cost of capital — the return money could earn
-              elsewhere. It&apos;s why a dollar of resale value five years out is
-              worth less than a dollar spent today, and often why a subsidized EV
-              lease can edge out buying even when the sticker math looks even.
+              That {pct(NPV.discountRate, 0)} is the discount rate, basically what your
+              money could earn if it were doing something else. It is why a dollar of
+              resale five years from now is worth less than a dollar today, and why a
+              cheap EV lease can quietly win even when the sticker prices look even.
             </dd>
           </div>
         </dl>
       </Block>
 
-      {/* Paper link */}
       <Block>
         <a
           href="#"
           className="inline-flex items-center gap-2 rounded-lg border border-teal/50 px-5 py-3 font-medium text-teal transition hover:bg-teal/10"
         >
-          Read the IEEE paper →
+          Read the paper →
         </a>
       </Block>
 
-      {/* Credits */}
       <Block>
         <div className="rounded-2xl border border-border bg-surface-raised/60 p-6 text-sm text-ink-muted">
           <p className="font-semibold text-ink">Credits</p>
           <p className="mt-2">
             Built by <span className="text-ink">Ved Shrinivas</span>, American School
-            of Dubai · IEEE Research 2025 · Mentor:{' '}
-            <span className="text-ink">Vinay Vishwakarma</span>
+            of Dubai. IEEE Research 2025. Mentor:{' '}
+            <span className="text-ink">Vinay Vishwakarma</span>.
           </p>
         </div>
       </Block>

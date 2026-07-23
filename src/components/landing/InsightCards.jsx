@@ -8,15 +8,15 @@ const mileageImportance = (RESEARCH.mileageImportance * 100).toFixed(1)
 const INSIGHTS = [
   {
     stat: `${(VALUE_RETENTION.tesla * 100).toFixed(1)}%`,
-    body: `Tesla retains ${(VALUE_RETENTION.tesla * 100).toFixed(1)}% of its value — about ${evDelta}% above the EV average.`,
+    body: `A Tesla still holds ${(VALUE_RETENTION.tesla * 100).toFixed(1)}% of its value after five years. That is about ${evDelta} points above the average EV.`,
   },
   {
     stat: `${(VALUE_RETENTION.budgetEv * 100).toFixed(1)}%`,
-    body: `Budget EVs under $35k retain only ${(VALUE_RETENTION.budgetEv * 100).toFixed(1)}% — less than half of Tesla.`,
+    body: `Budget EVs under $35k keep just ${(VALUE_RETENTION.budgetEv * 100).toFixed(1)}%. Less than half of what a Tesla hangs onto.`,
   },
   {
     stat: `${ageImportance}%`,
-    body: `Vehicle age drives ${ageImportance}% of depreciation — mileage only ${mileageImportance}%.`,
+    body: `Age is what really moves the needle, about ${ageImportance}% of the drop. Mileage barely registers at ${mileageImportance}%.`,
   },
 ]
 
@@ -31,12 +31,16 @@ export default function InsightCards() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.45, delay: i * 0.1 }}
           whileHover={{ y: -6 }}
-          className="rounded-2xl border border-border bg-surface-raised/60 p-7 transition-colors hover:border-teal/50"
+          className="group relative overflow-hidden rounded-2xl border border-border bg-surface-raised/60 p-7 transition-colors duration-300 hover:border-teal/50"
         >
-          <div className="mb-4 border-l-2 border-teal pl-3">
-            <span className="tabular text-3xl font-bold text-teal">{c.stat}</span>
+          {/* shimmer sheen that sweeps across on hover */}
+          <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-teal/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          <div className="relative">
+            <div className="mb-4 border-l-2 border-teal pl-3">
+              <span className="tabular text-3xl font-bold text-teal">{c.stat}</span>
+            </div>
+            <p className="text-ink-muted">{c.body}</p>
           </div>
-          <p className="text-ink-muted">{c.body}</p>
         </motion.div>
       ))}
     </div>

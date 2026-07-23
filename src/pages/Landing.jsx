@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import AnimatedBackground from '../components/landing/AnimatedBackground'
+import ParticleNetwork from '../components/landing/ParticleNetwork'
+import Typewriter from '../components/Typewriter'
+import Marquee from '../components/landing/Marquee'
 import StatsStrip from '../components/landing/StatsStrip'
 import HowItWorks from '../components/landing/HowItWorks'
 import InsightCards from '../components/landing/InsightCards'
@@ -13,6 +15,12 @@ const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 240, damping: 26 } },
 }
+
+const HEADLINES = [
+  'Know What Your EV Is Really Worth',
+  'Stop Guessing. Start Knowing.',
+  "Your EV Loses Value Fast. Here's Exactly How Fast.",
+]
 
 function SectionHeading({ eyebrow, title, subtitle }) {
   return (
@@ -37,7 +45,7 @@ export default function Landing() {
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="relative flex min-h-[calc(100vh-64px)] items-center overflow-hidden">
-        <AnimatedBackground />
+        <ParticleNetwork />
         <motion.div
           variants={container}
           initial="hidden"
@@ -45,52 +53,55 @@ export default function Landing() {
           className="relative mx-auto max-w-4xl px-6 py-20 text-center"
         >
           <motion.p variants={item} className="text-sm font-medium uppercase tracking-widest text-teal">
-            IEEE research · 15,000 vehicles · Random Forest + XGBoost
+            Built on real numbers from 15,000 cars
           </motion.p>
           <motion.h1
             variants={item}
-            className="mt-5 text-5xl font-extrabold leading-tight tracking-tight text-ink sm:text-7xl"
+            className="mx-auto mt-5 flex min-h-[9rem] max-w-3xl items-center justify-center text-4xl font-extrabold leading-tight tracking-tight text-ink sm:min-h-[11rem] sm:text-6xl"
           >
-            Know What Your EV Is <span className="text-teal">Really Worth</span>
+            <Typewriter phrases={HEADLINES} />
           </motion.h1>
           <motion.p variants={item} className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted">
-            Get a personalized 5-year depreciation forecast and buy-vs-lease
-            recommendation — powered by IEEE research on 15,000 vehicles.
+            Punch in your car and see how fast it loses value, plus whether buying
+            or leasing actually leaves more money in your pocket.
           </motion.p>
           <motion.div variants={item} className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               to="/estimate"
               className="w-full rounded-lg bg-teal px-8 py-3.5 font-semibold text-navy transition hover:bg-teal-400 sm:w-auto"
             >
-              Get My Projection
+              Check my numbers
             </Link>
             <Link
               to="/about"
               className="w-full rounded-lg border border-border px-8 py-3.5 font-semibold text-ink transition hover:border-teal/60 hover:text-teal sm:w-auto"
             >
-              See The Research
+              See the research
             </Link>
           </motion.div>
         </motion.div>
       </section>
 
+      {/* ── Marquee ──────────────────────────────────────────── */}
+      <Marquee />
+
       {/* ── Stats strip ──────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 pb-8">
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <StatsStrip />
       </section>
 
       {/* ── How it works ─────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <SectionHeading eyebrow="How it works" title="Three steps to your answer" />
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <SectionHeading eyebrow="How it works" title="Three steps, about thirty seconds" />
         <HowItWorks />
       </section>
 
       {/* ── Sample insights ──────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-12">
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <SectionHeading
-          eyebrow="From the research"
-          title="What the data shows"
-          subtitle="A few findings the tool is built on — see the full picture in your own projection."
+          eyebrow="From the data"
+          title="A few things the numbers turned up"
+          subtitle="Little previews of what the models found. Run your own car to see the full picture."
         />
         <InsightCards />
       </section>
@@ -103,12 +114,12 @@ export default function Landing() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl font-bold text-ink sm:text-5xl">Ready to see your numbers?</h2>
+          <h2 className="text-3xl font-bold text-ink sm:text-5xl">So, what's your car worth?</h2>
           <Link
             to="/estimate"
             className="mt-8 inline-block rounded-lg bg-teal px-10 py-4 text-lg font-semibold text-navy transition hover:bg-teal-400"
           >
-            Calculate My Projection
+            Run the numbers
           </Link>
         </motion.div>
       </section>

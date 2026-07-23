@@ -63,15 +63,15 @@ export default function DriversBreakdown({ vehicle }) {
           Top factor · {top.label}
         </p>
         <p className="mt-3 text-ink-muted">
-          <span className="font-semibold text-ink">{top.label}</span> accounts for{' '}
-          <span className="font-semibold text-ink">{top.importance}%</span> of the
-          depreciation signal. Your {vehicle.make} {vehicle.model} is currently{' '}
+          <span className="font-semibold text-ink">{top.label}</span> alone explains{' '}
+          <span className="font-semibold text-ink">{top.importance}%</span> of how a car
+          loses value. Your {vehicle.make} {vehicle.model} is{' '}
           <span className="font-semibold text-ink">
             {vehicle.age} {vehicle.age === 1 ? 'year' : 'years'} old
           </span>
           {vehicle.age <= 1
-            ? ' — early ownership is when EVs shed value fastest, so the steepest part of the curve is just ahead.'
-            : ' — most of the age-driven drop is already behind it, so the curve flattens from here.'}
+            ? ', and those first couple of years are when EVs drop the fastest. The steep part is still ahead.'
+            : ', so a lot of the age-related drop has already happened. The curve gets flatter from here.'}
         </p>
       </div>
     </div>

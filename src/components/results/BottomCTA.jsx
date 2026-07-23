@@ -11,17 +11,17 @@ export default function BottomCTA() {
           to="/estimate"
           className="w-full rounded-lg bg-teal px-8 py-3 font-semibold text-navy transition hover:bg-teal-400 sm:w-auto"
         >
-          Run another projection
+          Try another car
         </Link>
         <Link
           to="/about"
           className="w-full rounded-lg border border-border px-8 py-3 font-semibold text-ink transition hover:border-teal/60 hover:text-teal sm:w-auto"
         >
-          About the research
+          How this works
         </Link>
       </div>
       <p className="mt-5 text-xs text-ink-muted">
-        Based on IEEE research analyzing 15,000 vehicles.
+        Runs on real numbers from 15,000 cars.
       </p>
     </div>
   )
