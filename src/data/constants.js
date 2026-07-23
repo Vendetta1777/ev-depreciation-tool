@@ -9,6 +9,14 @@
 // EVs depreciate ~3.6 percentage points faster per year than comparable ICE.
 export const EV_ANNUAL_DEPRECIATION_PREMIUM = 0.036;
 
+// Study metadata (for the landing + about pages).
+export const RESEARCH = {
+  datasetSize: 15000, // vehicles analyzed
+  rSquared: 0.99, // model accuracy (R²)
+  papersReviewed: 15, // research papers surveyed
+  mileageImportance: 0.006, // mileage feature importance (~0.6%)
+};
+
 // 5-year value retention (fraction of original MSRP retained).
 export const VALUE_RETENTION = {
   ev: 0.303, // all EVs, blended
