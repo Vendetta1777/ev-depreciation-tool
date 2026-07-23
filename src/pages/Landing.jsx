@@ -57,11 +57,11 @@ export default function Landing() {
           </motion.p>
           <motion.h1
             variants={item}
-            className="mx-auto mt-5 flex min-h-[9rem] max-w-3xl items-center justify-center text-4xl font-extrabold leading-tight tracking-tight text-ink sm:min-h-[11rem] sm:text-6xl"
+            className="mx-auto mt-5 flex min-h-[7.5rem] max-w-3xl items-center justify-center text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-ink sm:min-h-[11rem] sm:text-6xl"
           >
             <Typewriter phrases={HEADLINES} />
           </motion.h1>
-          <motion.p variants={item} className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted">
+          <motion.p variants={item} className="mx-auto mt-6 max-w-2xl text-base text-ink-muted sm:text-lg">
             Punch in your car and see how fast it loses value, plus whether buying
             or leasing actually leaves more money in your pocket.
           </motion.p>
@@ -117,7 +117,7 @@ export default function Landing() {
           <h2 className="text-3xl font-bold text-ink sm:text-5xl">So, what's your car worth?</h2>
           <Link
             to="/estimate"
-            className="mt-8 inline-block rounded-lg bg-teal px-10 py-4 text-lg font-semibold text-navy transition hover:bg-teal-400"
+            className="mt-8 block w-full rounded-lg bg-teal px-10 py-4 text-lg font-semibold text-navy transition hover:bg-teal-400 sm:inline-block sm:w-auto"
           >
             Run the numbers
           </Link>

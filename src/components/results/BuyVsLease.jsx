@@ -19,6 +19,8 @@ const LEASE_COLOR = '#f59e0b'
  */
 export default function BuyVsLease({ money, verdict }) {
   const buyWins = verdict === 'BUY'
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const tickSize = isMobile ? 10 : 12
 
   return (
     <div className="space-y-6">
@@ -33,27 +35,29 @@ export default function BuyVsLease({ money, verdict }) {
         That gap is the whole reason to run the numbers this way.
       </p>
 
-      <div className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-6">
+      <div className="rounded-2xl border border-border bg-surface-raised/60 p-3 sm:p-6">
         <p className="mb-4 text-sm font-medium text-ink-muted">
           How much you have spent, year by year
         </p>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={money.cumulative} margin={{ top: 4, right: 12, left: 0, bottom: 4 }}>
+        <ResponsiveContainer width="100%" height={isMobile ? 260 : 300}>
+          <BarChart data={money.cumulative} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
             <CartesianGrid stroke="#1d3c5f" strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="year"
               stroke="#8ba0b8"
               tickLine={false}
+              tick={{ fontSize: tickSize, fill: '#8ba0b8' }}
               axisLine={{ stroke: '#1d3c5f' }}
-              label={{ value: 'Years', position: 'insideBottom', offset: -2, fill: '#8ba0b8', fontSize: 12 }}
+              label={{ value: 'Years', position: 'insideBottom', offset: -2, fill: '#8ba0b8', fontSize: tickSize }}
             />
             <YAxis
               stroke="#8ba0b8"
               tickLine={false}
               axisLine={false}
-              width={64}
+              width={isMobile ? 44 : 64}
+              tick={{ fontSize: tickSize, fill: '#8ba0b8' }}
               tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-              label={{ value: 'Spent so far', angle: -90, position: 'insideLeft', offset: 16, fill: '#8ba0b8', fontSize: 12 }}
+              label={isMobile ? undefined : { value: 'Spent so far', angle: -90, position: 'insideLeft', offset: 16, fill: '#8ba0b8', fontSize: 12 }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(29,60,95,0.3)' }}

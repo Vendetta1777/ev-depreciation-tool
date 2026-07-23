@@ -15,19 +15,24 @@ export default function Typewriter({
   const [text, setText] = useState('')
   const [phase, setPhase] = useState('typing') // typing | holding | deleting
 
+  // Slow the typing down a touch on phones so it stays legible.
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const typeMs = isMobile ? typeSpeed * 1.6 : typeSpeed
+  const deleteMs = isMobile ? deleteSpeed * 1.6 : deleteSpeed
+
   useEffect(() => {
     const full = phrases[index]
     let t
 
     if (phase === 'typing') {
       if (text.length < full.length) {
-        t = setTimeout(() => setText(full.slice(0, text.length + 1)), typeSpeed)
+        t = setTimeout(() => setText(full.slice(0, text.length + 1)), typeMs)
       } else {
         t = setTimeout(() => setPhase('deleting'), hold)
       }
     } else if (phase === 'deleting') {
       if (text.length > 0) {
-        t = setTimeout(() => setText(full.slice(0, text.length - 1)), deleteSpeed)
+        t = setTimeout(() => setText(full.slice(0, text.length - 1)), deleteMs)
       } else {
         setPhase('typing')
         setIndex((i) => (i + 1) % phrases.length)
@@ -35,7 +40,7 @@ export default function Typewriter({
     }
 
     return () => clearTimeout(t)
-  }, [text, phase, index, phrases, typeSpeed, deleteSpeed, hold])
+  }, [text, phase, index, phrases, typeMs, deleteMs, hold])
 
   return (
     <span className={className}>

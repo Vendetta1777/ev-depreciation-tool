@@ -6,8 +6,19 @@ import { motion } from 'framer-motion'
  */
 
 const fieldBase =
-  'w-full rounded-lg border bg-navy-800 px-4 py-3.5 text-ink placeholder:text-ink-muted/60 ' +
+  'w-full min-h-[48px] rounded-lg border bg-navy-800 px-4 py-3.5 text-ink placeholder:text-ink-muted/60 ' +
   'outline-none transition focus:ring-2 focus:ring-teal/70 disabled:opacity-50'
+
+/**
+ * On phones, nudge the focused field toward the middle of the screen so the
+ * on-screen keyboard does not sit on top of it. Delayed so it fires after the
+ * keyboard starts animating in.
+ */
+export function keepInView(e) {
+  if (window.innerWidth >= 640) return
+  const el = e.currentTarget
+  setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)
+}
 
 function ErrorText({ children }) {
   if (!children) return null
@@ -29,6 +40,7 @@ export function Select({ label, value, onChange, options, placeholder, error, di
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onFocus={keepInView}
         disabled={disabled}
         className={`${fieldBase} ${error ? 'border-negative' : 'border-border'} ${
           disabled ? 'cursor-not-allowed' : 'cursor-pointer'
@@ -65,6 +77,7 @@ export function NumberInput({ label, value, onChange, placeholder, error, prefix
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={keepInView}
           placeholder={placeholder}
           className={`${fieldBase} tabular ${error ? 'border-negative' : 'border-border'} ${
             prefix ? 'pl-8' : ''

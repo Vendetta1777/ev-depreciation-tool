@@ -6,8 +6,12 @@ import { usd } from '../../utils/format'
  */
 export default function ValueTable({ rows, currentYear }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border">
-      <table className="w-full min-w-[420px] text-left text-sm">
+    <div>
+      <p className="mb-2 flex items-center justify-end gap-1 text-xs text-ink-muted sm:hidden">
+        Swipe to see all columns <span aria-hidden>→</span>
+      </p>
+      <div className="overflow-x-auto rounded-2xl border border-border">
+        <table className="w-full min-w-[420px] text-left text-sm">
         <thead>
           <tr className="bg-navy-700 text-ink-muted">
             <th className="px-5 py-3 font-medium">Year</th>
@@ -55,8 +59,9 @@ export default function ValueTable({ rows, currentYear }) {
               </tr>
             )
           })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

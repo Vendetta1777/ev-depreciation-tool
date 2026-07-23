@@ -19,10 +19,10 @@ export default function HeroSummary({ vehicle, recommendation, tier }) {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`verdict-pulse rounded-3xl border ${ring} p-8 sm:p-10`}
+      className={`verdict-pulse rounded-3xl border ${ring} p-6 sm:p-10`}
       style={{ backgroundImage: gradient }}
     >
-      <p className="text-sm font-medium uppercase tracking-widest text-ink-muted">
+      <p className="text-xs font-medium uppercase tracking-widest text-ink-muted sm:text-sm">
         {vehicle.year} {vehicle.make} {vehicle.model} · {tier.label} ·{' '}
         {vehicle.milesPerYear.toLocaleString()} mi/yr
       </p>

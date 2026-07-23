@@ -19,8 +19,10 @@ export default function SearchableSelect({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
+  const [dropUp, setDropUp] = useState(false)
   const rootRef = useRef(null)
   const listRef = useRef(null)
+  const inputRef = useRef(null)
 
   const norm = useMemo(
     () => options.map((o) => (typeof o === 'object' ? o : { value: o, label: o })),
@@ -50,6 +52,21 @@ export default function SearchableSelect({
     if (el) el.scrollIntoView({ block: 'nearest' })
   }, [active, open])
 
+  // Decide whether the list should drop down or up based on room below, and
+  // on phones nudge the field up so the keyboard does not cover the list.
+  function openList() {
+    if (disabled) return
+    const rect = inputRef.current?.getBoundingClientRect()
+    if (rect) {
+      const spaceBelow = window.innerHeight - rect.bottom
+      setDropUp(spaceBelow < 300 && rect.top > spaceBelow)
+    }
+    setOpen(true)
+    if (window.innerWidth < 640) {
+      setTimeout(() => inputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)
+    }
+  }
+
   function choose(opt) {
     onChange(opt.value)
     setOpen(false)
@@ -74,13 +91,14 @@ export default function SearchableSelect({
   }
 
   const fieldBase =
-    'w-full rounded-lg border bg-navy-800 px-4 py-3.5 text-left text-ink outline-none transition focus:ring-2 focus:ring-teal/70'
+    'w-full min-h-[48px] rounded-lg border bg-navy-800 px-4 py-3.5 text-left text-ink outline-none transition focus:ring-2 focus:ring-teal/70'
 
   return (
     <div className="block" ref={rootRef}>
       <span className="mb-2 block text-sm font-medium text-ink-muted">{label}</span>
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           role="combobox"
           aria-expanded={open}
@@ -92,9 +110,9 @@ export default function SearchableSelect({
           onChange={(e) => {
             setQuery(e.target.value)
             setActive(0)
-            if (!open) setOpen(true)
+            if (!open) openList()
           }}
-          onFocus={() => !disabled && setOpen(true)}
+          onFocus={openList}
           onKeyDown={onKeyDown}
           className={`${fieldBase} pr-10 placeholder:text-ink-muted/60 disabled:cursor-not-allowed disabled:opacity-50 ${
             error ? 'border-negative' : 'border-border'
@@ -114,11 +132,13 @@ export default function SearchableSelect({
               id={`${label}-listbox`}
               ref={listRef}
               role="listbox"
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: dropUp ? 6 : -6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
+              exit={{ opacity: 0, y: dropUp ? 6 : -6 }}
               transition={{ duration: 0.14 }}
-              className="absolute z-30 mt-2 max-h-64 w-full overflow-auto rounded-lg border border-border bg-navy-800 py-1 shadow-2xl"
+              className={`absolute z-30 max-h-64 w-full overflow-auto rounded-lg border border-border bg-navy-800 py-1 shadow-2xl ${
+                dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
+              }`}
             >
               {filtered.length === 0 && (
                 <li className="px-4 py-3 text-sm text-ink-muted">No matches. Try another spelling.</li>
@@ -133,7 +153,7 @@ export default function SearchableSelect({
                     e.preventDefault()
                     choose(opt)
                   }}
-                  className={`cursor-pointer px-4 py-2.5 text-sm ${
+                  className={`flex min-h-[44px] cursor-pointer items-center px-4 py-2.5 text-sm ${
                     i === active ? 'bg-teal/15 text-teal' : 'text-ink'
                   } ${opt.value === value ? 'font-semibold' : ''}`}
                 >

@@ -30,8 +30,10 @@ export default function ParticleNetwork() {
       canvas.style.height = `${height}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      // Node count scales with area, capped for performance.
-      const count = Math.min(70, Math.round((width * height) / 22000))
+      // Node count scales with area, but stays light on phones so it never lags.
+      const isMobile = window.innerWidth < 640
+      const cap = isMobile ? 30 : 70
+      const count = Math.min(cap, Math.round((width * height) / 22000))
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,

@@ -36,8 +36,8 @@ export default function NavBar() {
         scrolled ? 'border-border bg-navy/80 backdrop-blur' : 'border-transparent bg-transparent'
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <NavLink to="/" className="flex items-center gap-2 font-bold text-ink">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+        <NavLink to="/" className="flex items-center gap-2 text-sm font-bold text-ink sm:text-base">
           <span className="text-teal">◆</span> EV Depreciation Tool
         </NavLink>
 
@@ -58,7 +58,7 @@ export default function NavBar() {
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-ink sm:hidden"
+          className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-ink sm:hidden"
         >
           <div className="relative h-4 w-6">
             <motion.span
@@ -94,7 +94,7 @@ export default function NavBar() {
                     to={l.to}
                     end={l.end}
                     className={({ isActive }) =>
-                      `block rounded-lg px-4 py-4 text-lg font-medium ${
+                      `flex min-h-[56px] items-center rounded-lg px-4 text-lg font-medium ${
                         isActive ? 'bg-teal/10 text-teal' : 'text-ink hover:bg-surface-raised/60'
                       }`
                     }

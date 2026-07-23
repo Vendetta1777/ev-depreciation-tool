@@ -17,16 +17,21 @@ const COLORS = {
   iceAvg: '#34d399', // green, ICE average
 }
 
-function CustomTooltip({ active, payload, label, vehicleName }) {
+function CustomTooltip({ active, payload, label, vehicleName, compact }) {
   if (!active || !payload?.length) return null
   const row = payload[0]?.payload
   return (
-    <div className="rounded-lg border border-border bg-navy-800/95 px-4 py-3 text-sm shadow-xl backdrop-blur">
+    <div className="rounded-lg border border-border bg-navy-800/95 px-3 py-2.5 text-sm shadow-xl backdrop-blur">
       <p className="mb-2 font-semibold text-ink">Year {label}</p>
       <div className="tabular space-y-1">
-        <Row color={COLORS.vehicle} label={vehicleName} value={`${row.vehicle}%`} extra={usd(row.vehicleValue)} />
-        <Row color={COLORS.evAvg} label="EV average" value={`${row.evAvg}%`} />
-        <Row color={COLORS.iceAvg} label="ICE average" value={`${row.iceAvg}%`} />
+        <Row
+          color={COLORS.vehicle}
+          label={compact ? 'Yours' : vehicleName}
+          value={`${row.vehicle}%`}
+          extra={compact ? null : usd(row.vehicleValue)}
+        />
+        <Row color={COLORS.evAvg} label={compact ? 'EV avg' : 'EV average'} value={`${row.evAvg}%`} />
+        <Row color={COLORS.iceAvg} label={compact ? 'Gas avg' : 'ICE average'} value={`${row.iceAvg}%`} />
       </div>
     </div>
   )
@@ -48,28 +53,32 @@ function Row({ color, label, value, extra }) {
  * with a "you are here" marker at the car's current age.
  */
 export default function DepreciationChart({ data, vehicleName, currentAge = 0 }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const tickSize = isMobile ? 10 : 12
   return (
-    <div className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-6">
-      <ResponsiveContainer width="100%" height={360}>
-        <LineChart data={data} margin={{ top: 8, right: 12, left: 6, bottom: 12 }}>
+    <div className="rounded-2xl border border-border bg-surface-raised/60 p-3 sm:p-6">
+      <ResponsiveContainer width="100%" height={isMobile ? 300 : 360}>
+        <LineChart data={data} margin={{ top: 8, right: 10, left: 0, bottom: 12 }}>
           <CartesianGrid stroke="#1d3c5f" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="year"
             stroke="#8ba0b8"
             tickLine={false}
+            tick={{ fontSize: tickSize, fill: '#8ba0b8' }}
             axisLine={{ stroke: '#1d3c5f' }}
-            label={{ value: 'Years from new', position: 'insideBottom', offset: -8, fill: '#8ba0b8', fontSize: 12 }}
+            label={{ value: isMobile ? 'Years' : 'Years from new', position: 'insideBottom', offset: -8, fill: '#8ba0b8', fontSize: tickSize }}
           />
           <YAxis
             stroke="#8ba0b8"
             tickLine={false}
             axisLine={false}
-            width={52}
+            width={isMobile ? 40 : 52}
+            tick={{ fontSize: tickSize, fill: '#8ba0b8' }}
             domain={[0, 100]}
             tickFormatter={(v) => `${v}%`}
-            label={{ value: 'Value kept', angle: -90, position: 'insideLeft', offset: 12, fill: '#8ba0b8', fontSize: 12 }}
+            label={isMobile ? undefined : { value: 'Value kept', angle: -90, position: 'insideLeft', offset: 12, fill: '#8ba0b8', fontSize: 12 }}
           />
-          <Tooltip content={<CustomTooltip vehicleName={vehicleName} />} />
+          <Tooltip content={<CustomTooltip vehicleName={vehicleName} compact={isMobile} />} />
           <Legend
             wrapperStyle={{ paddingTop: 12 }}
             formatter={(value) => <span className="text-ink-muted">{value}</span>}

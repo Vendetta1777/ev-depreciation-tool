@@ -15,20 +15,22 @@ import { ALL_DRIVERS } from '../../data/constants'
  * factor for the specific vehicle.
  */
 export default function DriversBreakdown({ vehicle }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const SHORT = { 'Vehicle Age': 'Age', 'Model Year': 'Year', MSRP: 'Price', Make: 'Make', 'Fuel Type': 'Fuel' }
   const data = ALL_DRIVERS.map((d) => ({
-    label: d.label,
+    label: isMobile ? SHORT[d.label] ?? d.label : d.label,
     importance: +(d.importance * 100).toFixed(1),
   }))
   const top = data[0]
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
-      <div className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-6 lg:col-span-3">
+      <div className="rounded-2xl border border-border bg-surface-raised/60 p-3 sm:p-6 lg:col-span-3">
         <ResponsiveContainer width="100%" height={260}>
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 4, right: 40, left: 8, bottom: 4 }}
+            margin={{ top: 4, right: 40, left: 4, bottom: 4 }}
           >
             <XAxis type="number" domain={[0, 50]} hide />
             <YAxis
@@ -37,7 +39,8 @@ export default function DriversBreakdown({ vehicle }) {
               stroke="#8ba0b8"
               tickLine={false}
               axisLine={false}
-              width={92}
+              width={isMobile ? 44 : 92}
+              tick={{ fontSize: isMobile ? 11 : 12, fill: '#8ba0b8' }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(29,60,95,0.3)' }}

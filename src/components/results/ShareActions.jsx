@@ -36,7 +36,7 @@ export default function ShareActions({ summaryText }) {
   }
 
   const base =
-    'flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition'
+    'flex min-h-[44px] items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition'
 
   return (
     <div className="flex flex-wrap gap-3">

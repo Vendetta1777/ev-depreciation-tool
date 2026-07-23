@@ -18,13 +18,13 @@ export function retentionComparison(retention5) {
 
 /** The three scannable bullets shown at the top of the results. */
 export function summaryBullets(vehicle, projection) {
-  const { recommendation, tier, rate } = projection
-  const name = `${vehicle.make} ${vehicle.model}`
+  const { recommendation, tier, projectionTable } = projection
   const leaseWins = recommendation.verdict === 'LEASE'
+  const y5 = projectionTable[projectionTable.length - 1]
   return [
-    `Your ${name} is losing about ${usd(rate.perDay)} a day right now.`,
     `${leaseWins ? 'Leasing' : 'Buying'} saves you around ${usd(recommendation.advantage)} over 5 years.`,
     `It ${retentionComparison(tier.retention5)}.`,
+    `After 5 years it should be worth about ${usd(y5.value)}, roughly ${y5.retention}% of what you paid.`,
   ]
 }
 

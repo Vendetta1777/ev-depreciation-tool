@@ -205,11 +205,14 @@ export default function InputForm() {
           />
         </motion.div>
 
-        <motion.div variants={item}>
+        <motion.div
+          variants={item}
+          className="sticky bottom-0 z-10 -mx-6 border-t border-border bg-navy/90 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none"
+        >
           <button
             type="submit"
             disabled={submitting}
-            className="group flex w-full items-center justify-center gap-2 rounded-lg bg-teal px-6 py-4 text-base font-semibold text-navy transition hover:bg-teal-400 disabled:cursor-wait disabled:opacity-80"
+            className="group flex min-h-[52px] w-full items-center justify-center gap-2 rounded-lg bg-teal px-6 py-4 text-base font-semibold text-navy transition hover:bg-teal-400 disabled:cursor-wait disabled:opacity-80"
           >
             <AnimatePresence mode="wait" initial={false}>
               {submitting ? (
