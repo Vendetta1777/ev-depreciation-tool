@@ -53,6 +53,7 @@ export default function BuyVsLease({ money, verdict }) {
               axisLine={false}
               width={64}
               tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+              label={{ value: 'Spent so far', angle: -90, position: 'insideLeft', offset: 16, fill: '#8ba0b8', fontSize: 12 }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(29,60,95,0.3)' }}
@@ -74,6 +75,9 @@ export default function BuyVsLease({ money, verdict }) {
             <Bar dataKey="lease" fill={LEASE_COLOR} radius={[4, 4, 0, 0]} animationDuration={1200} />
           </BarChart>
         </ResponsiveContainer>
+        <p className="mt-3 text-center text-xs text-ink-muted">
+          Running total of what you have paid out under each option, year by year.
+        </p>
       </div>
     </div>
   )

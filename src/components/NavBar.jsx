@@ -87,15 +87,15 @@ export default function NavBar() {
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className="overflow-hidden border-t border-border bg-navy/95 backdrop-blur sm:hidden"
           >
-            <ul className="flex flex-col gap-1 px-6 py-4">
+            <ul className="flex flex-col gap-1 px-4 py-3">
               {LINKS.map((l) => (
                 <li key={l.to}>
                   <NavLink
                     to={l.to}
                     end={l.end}
                     className={({ isActive }) =>
-                      `block rounded-lg px-3 py-3 ${
-                        isActive ? 'bg-teal/10 text-teal' : 'text-ink-muted hover:text-ink'
+                      `block rounded-lg px-4 py-4 text-lg font-medium ${
+                        isActive ? 'bg-teal/10 text-teal' : 'text-ink hover:bg-surface-raised/60'
                       }`
                     }
                   >

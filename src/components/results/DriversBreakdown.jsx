@@ -56,6 +56,9 @@ export default function DriversBreakdown({ vehicle }) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        <p className="mt-2 text-center text-xs text-ink-muted">
+          Longer bars are the things that move a car's value the most.
+        </p>
       </div>
 
       <div className="rounded-2xl border border-border bg-surface-raised/60 p-6 lg:col-span-2">

@@ -1,10 +1,14 @@
-import { Navigate, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Navigate, useLocation, Link } from 'react-router-dom'
+import { useMemo } from 'react'
 import useProjection from '../hooks/useProjection'
-import { usd } from '../utils/format'
+import { buildSummaryText } from '../utils/summary'
 import Confetti from '../components/Confetti'
 import Section, { SectionHeader } from '../components/results/Section'
 import HeroSummary from '../components/results/HeroSummary'
+import QuickSummary from '../components/results/QuickSummary'
+import WhatThisMeans from '../components/results/WhatThisMeans'
+import ShareActions from '../components/results/ShareActions'
+import MobileActionBar from '../components/results/MobileActionBar'
 import DepreciationChart from '../components/results/DepreciationChart'
 import ValueTable from '../components/results/ValueTable'
 import BuyVsLease from '../components/results/BuyVsLease'
@@ -20,63 +24,65 @@ export default function Results() {
   const vehicle = state?.vehicle
   const projection = useProjection(vehicle)
 
+  const summaryText = useMemo(
+    () => (vehicle && projection ? buildSummaryText(vehicle, projection) : ''),
+    [vehicle, projection],
+  )
+
   if (!vehicle || !projection) {
     return <Navigate to="/estimate" replace />
   }
 
-  const { recommendation, tier, comparison, projectionTable, money, rate } = projection
+  const { recommendation, tier, comparison, projectionTable, money } = projection
   const vehicleName = `${vehicle.make} ${vehicle.model}`
   const currentYear = Math.min(vehicle.age ?? 0, projectionTable.length - 1)
 
   return (
-    <div className="mx-auto max-w-5xl space-y-14 px-6 py-12 sm:py-16">
-      {/* Celebration on load */}
+    <div className="mx-auto max-w-5xl space-y-12 px-6 pb-28 pt-6 sm:space-y-14 sm:pb-16 sm:pt-8">
       <Confetti />
+
+      {/* Always-visible back + share row */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          to="/estimate"
+          className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink transition hover:border-teal/60 hover:text-teal"
+        >
+          ← New calculation
+        </Link>
+        <ShareActions summaryText={summaryText} />
+      </div>
 
       {/* 1 — Verdict */}
       <HeroSummary vehicle={vehicle} recommendation={recommendation} tier={tier} />
 
-      {/* Losing-value callout */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="rounded-2xl border border-border bg-surface-raised/60 p-6 text-center sm:p-8"
-      >
-        <p className="text-sm uppercase tracking-widest text-ink-muted">
-          Right now this car is losing about
-        </p>
-        <p className="tabular mt-2 text-4xl font-extrabold text-negative sm:text-5xl">
-          {usd(rate.perDay)} <span className="text-2xl font-bold text-ink-muted">a day</span>
-        </p>
-        <p className="mt-1 text-ink-muted">
-          That is roughly <span className="font-semibold text-ink">{usd(rate.perMonth)}</span> a
-          month in its first year.
-        </p>
-      </motion.div>
+      {/* Scannable takeaways + plain-English explainer */}
+      <div className="space-y-4">
+        <QuickSummary vehicle={vehicle} projection={projection} />
+        <WhatThisMeans vehicle={vehicle} projection={projection} />
+      </div>
 
-      {/* 2 — Depreciation curve */}
+      {/* 2 — Buy vs lease (the answer people came for) */}
+      <Section>
+        <SectionHeader title="Buy or lease?" caption="The five-year money, side by side." />
+        <BuyVsLease money={money} verdict={recommendation.verdict} />
+      </Section>
+
+      {/* 3 — Depreciation curve */}
       <Section>
         <SectionHeader
           title="How it holds up"
           caption="Your car against the average EV and gas car over ten years. Hover a year to see the dollars."
         />
-        <DepreciationChart data={comparison} vehicleName={vehicleName} />
+        <DepreciationChart data={comparison} vehicleName={vehicleName} currentAge={currentYear} />
       </Section>
 
-      {/* 3 — Value projection table */}
+      {/* 4 — Value projection table */}
       <Section>
         <SectionHeader
           title="What it will be worth"
           caption={`Year by year, what your ${usdMsrp(vehicle.msrp)} ${vehicleName} is likely to sell for.`}
         />
         <ValueTable rows={projectionTable} currentYear={currentYear} />
-      </Section>
-
-      {/* 4 — Buy vs lease */}
-      <Section>
-        <SectionHeader title="Buy or lease?" caption="The five-year money, side by side." />
-        <BuyVsLease money={money} verdict={recommendation.verdict} />
       </Section>
 
       {/* 5 — Depreciation drivers */}
@@ -92,6 +98,9 @@ export default function Results() {
       <Section>
         <BottomCTA />
       </Section>
+
+      {/* Sticky bottom bar on phones */}
+      <MobileActionBar summaryText={summaryText} />
     </div>
   )
 }

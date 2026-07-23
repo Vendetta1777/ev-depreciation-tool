@@ -43,7 +43,14 @@ export default function ValueTable({ rows, currentYear }) {
                   −{usd(r.valueLost)}
                 </td>
                 <td className="tabular px-5 py-3 text-right text-ink-muted">
-                  {r.retention}%
+                  <span className="inline-flex items-center justify-end gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ background: `hsl(${(r.retention / 100) * 120}, 65%, 50%)` }}
+                      aria-hidden
+                    />
+                    {r.retention}%
+                  </span>
                 </td>
               </tr>
             )
