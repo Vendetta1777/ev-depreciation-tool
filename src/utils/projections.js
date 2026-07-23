@@ -165,6 +165,90 @@ export function getRecommendation(leaseNPV, buyNPV) {
   return { verdict, advantage, leaseNPV, buyNPV, reasoning }
 }
 
+/**
+ * comparisonCurve — retention (%) from new across `years` for three lines:
+ * the vehicle, the EV average, and the ICE average. Includes the vehicle's
+ * dollar value at each point (for the tooltip). Year 0 = 100%.
+ */
+export function comparisonCurve(vehicleData, years = 10) {
+  const { msrp = 0 } = vehicleData
+  const { retention5 } = resolveTier(vehicleData)
+  const aVehicle = Math.pow(retention5, 1 / NPV.horizonYears)
+  const aEv = Math.pow(VALUE_RETENTION.ev, 1 / NPV.horizonYears)
+  const aIce = Math.pow(VALUE_RETENTION.ice, 1 / NPV.horizonYears)
+
+  return Array.from({ length: years }, (_, y) => ({
+    year: y,
+    vehicle: +(Math.pow(aVehicle, y) * 100).toFixed(1),
+    evAvg: +(Math.pow(aEv, y) * 100).toFixed(1),
+    iceAvg: +(Math.pow(aIce, y) * 100).toFixed(1),
+    vehicleValue: Math.round(msrp * Math.pow(aVehicle, y)),
+  }))
+}
+
+/**
+ * valueProjection — per-year table rows (years 0..years) for the vehicle:
+ * projected value, cumulative value lost, and retention %.
+ */
+export function valueProjection(vehicleData, years = NPV.horizonYears) {
+  const { msrp = 0 } = vehicleData
+  const { retention5 } = resolveTier(vehicleData)
+  const annual = Math.pow(retention5, 1 / NPV.horizonYears)
+
+  return Array.from({ length: years + 1 }, (_, y) => {
+    const retention = Math.pow(annual, y)
+    const value = Math.round(msrp * retention)
+    return {
+      year: y,
+      value,
+      valueLost: Math.round(msrp - value),
+      retention: +(retention * 100).toFixed(1),
+    }
+  })
+}
+
+/**
+ * financials — buy/lease card figures plus a year-by-year cumulative cost series.
+ * Card values are nominal (out-of-pocket) except `npv`, which is present value.
+ */
+export function financials(vehicleData) {
+  const b = calcNPVBreakdown(vehicleData)
+  const years = NPV.horizonYears
+  const annualLease = b.monthlyPayment * 12
+
+  // Gross cash outlay (before recovering resale). Buying requires more cash out;
+  // the residual is shown separately as a credit, and NPV is the tie-breaker —
+  // this keeps every visible cost consistent with the NPV-based verdict rather
+  // than netting resale into a total that could undercut it.
+  const buyGross = (vehicleData.msrp ?? 0) + b.annualOps * years
+  const leaseTotal = annualLease * years + b.annualOps * years
+
+  // Cumulative cash spent by year (gross — resale is credited at sale, shown
+  // on the buy card). Buy fronts the MSRP; lease accrues linearly.
+  const cumulative = Array.from({ length: years + 1 }, (_, y) => ({
+    year: y,
+    buy: Math.round((vehicleData.msrp ?? 0) + b.annualOps * y),
+    lease: Math.round(annualLease * y + b.annualOps * y),
+  }))
+
+  return {
+    ...b,
+    buy: {
+      monthly: buyGross / (years * 12),
+      total: buyGross,
+      residual: b.resaleValue,
+      npv: b.buyNPV,
+    },
+    lease: {
+      monthly: leaseTotal / (years * 12),
+      total: leaseTotal,
+      residual: 0,
+      npv: b.leaseNPV,
+    },
+    cumulative,
+  }
+}
+
 /** Convenience: run the whole projection for a vehicle in one call. */
 export function runProjection(vehicleData) {
   const breakdown = calcNPVBreakdown(vehicleData)
@@ -176,5 +260,13 @@ export function runProjection(vehicleData) {
     vehicleData.fuelType ?? 'EV',
   )
   const recommendation = getRecommendation(breakdown.leaseNPV, breakdown.buyNPV)
-  return { breakdown, curve, recommendation, tier: resolveTier(vehicleData) }
+  return {
+    breakdown,
+    curve,
+    recommendation,
+    tier: resolveTier(vehicleData),
+    comparison: comparisonCurve(vehicleData),
+    projectionTable: valueProjection(vehicleData),
+    money: financials(vehicleData),
+  }
 }

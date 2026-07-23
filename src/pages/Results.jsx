@@ -1,13 +1,16 @@
-import { Link, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Navigate, useLocation } from 'react-router-dom'
 import useProjection from '../hooks/useProjection'
-import { usd } from '../utils/format'
+import Section, { SectionHeader } from '../components/results/Section'
+import HeroSummary from '../components/results/HeroSummary'
+import DepreciationChart from '../components/results/DepreciationChart'
+import ValueTable from '../components/results/ValueTable'
+import BuyVsLease from '../components/results/BuyVsLease'
+import DriversBreakdown from '../components/results/DriversBreakdown'
+import BottomCTA from '../components/results/BottomCTA'
 
 /**
- * Results dashboard.
- * Phase 2: reads the vehicle passed via router state and renders the
- * recommendation + headline NPV figures. Charts + full breakdown land in a
- * later phase.
+ * Results dashboard. Receives the vehicle via router state; redirects to the
+ * form if there's nothing to show (e.g. a direct visit or refresh).
  */
 export default function Results() {
   const { state } = useLocation()
@@ -15,92 +18,62 @@ export default function Results() {
   const projection = useProjection(vehicle)
 
   if (!vehicle || !projection) {
-    return (
-      <section className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <h1 className="text-3xl font-bold text-ink">No projection yet</h1>
-        <p className="mt-3 text-ink-muted">
-          Enter your vehicle details to see depreciation and buy-vs-lease
-          results.
-        </p>
-        <Link
-          to="/estimate"
-          className="mt-8 inline-block rounded-lg bg-teal px-6 py-3 font-semibold text-navy transition hover:bg-teal-400"
-        >
-          Start a projection
-        </Link>
-      </section>
-    )
+    return <Navigate to="/estimate" replace />
   }
 
-  const { breakdown, recommendation, tier } = projection
-  const leaseWins = recommendation.verdict === 'LEASE'
+  const { recommendation, tier, comparison, projectionTable, money } = projection
+  const vehicleName = `${vehicle.make} ${vehicle.model}`
+  const currentYear = Math.min(vehicle.age ?? 0, projectionTable.length - 1)
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-sm uppercase tracking-widest text-teal">Projection</p>
-        <h1 className="mt-1 text-3xl font-bold text-ink sm:text-4xl">
-          {vehicle.year} {vehicle.make} {vehicle.model}
-        </h1>
-        <p className="mt-2 text-ink-muted">
-          {tier.label} · {(tier.retention5 * 100).toFixed(1)}% projected 5-year
-          retention · {vehicle.milesPerYear.toLocaleString()} mi/yr
-        </p>
-      </motion.div>
+    <div className="mx-auto max-w-5xl space-y-14 px-6 py-12 sm:py-16">
+      {/* 1 — Hero verdict */}
+      <HeroSummary vehicle={vehicle} recommendation={recommendation} tier={tier} />
 
-      {/* Recommendation callout */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mt-8 rounded-2xl border border-teal/40 bg-gradient-to-br from-navy-700 to-navy-800 p-8"
-      >
-        <p className="text-sm font-medium uppercase tracking-widest text-ink-muted">
-          Recommendation
-        </p>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <span className="text-5xl font-bold text-teal">{recommendation.verdict}</span>
-          <span className="tabular text-2xl font-semibold text-ink">
-            {usd(recommendation.advantage)} advantage
-          </span>
-        </div>
-        <p className="mt-4 max-w-2xl text-ink-muted">{recommendation.reasoning}</p>
-      </motion.div>
-
-      {/* Headline numbers */}
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        <StatCard
-          title="Buy — 5-yr cost (NPV)"
-          value={usd(breakdown.buyNPV)}
-          highlight={!leaseWins}
-          sub={`Resale recovered: ${usd(breakdown.resaleValue)}`}
+      {/* 2 — Depreciation curve */}
+      <Section>
+        <SectionHeader
+          title="Depreciation curve"
+          caption="Value retained over 10 years vs the EV and ICE averages. Hover any year for the dollar value."
         />
-        <StatCard
-          title="Lease — 5-yr cost (NPV)"
-          value={usd(breakdown.leaseNPV)}
-          highlight={leaseWins}
-          sub={`${usd(breakdown.monthlyPayment)}/mo payment`}
-        />
-      </div>
+        <DepreciationChart data={comparison} vehicleName={vehicleName} />
+      </Section>
 
-      <div className="mt-8 rounded-xl border border-border bg-surface-raised p-6 text-sm text-ink-muted">
-        Depreciation curve, driver breakdown, and full financial detail —
-        coming in the next phase.
-      </div>
-    </section>
+      {/* 3 — Value projection table */}
+      <Section>
+        <SectionHeader
+          title="5-year value projection"
+          caption={`Projected resale value of your ${usdMsrp(vehicle.msrp)} ${vehicleName}.`}
+        />
+        <ValueTable rows={projectionTable} currentYear={currentYear} />
+      </Section>
+
+      {/* 4 — Buy vs lease */}
+      <Section>
+        <SectionHeader
+          title="Buy vs lease breakdown"
+          caption="Five-year economics side by side, with cumulative cost over time."
+        />
+        <BuyVsLease money={money} verdict={recommendation.verdict} />
+      </Section>
+
+      {/* 5 — Depreciation drivers */}
+      <Section>
+        <SectionHeader
+          title="What's driving depreciation"
+          caption="Feature importances from the Random Forest / XGBoost models."
+        />
+        <DriversBreakdown vehicle={vehicle} />
+      </Section>
+
+      {/* 6 — CTA */}
+      <Section>
+        <BottomCTA />
+      </Section>
+    </div>
   )
 }
 
-function StatCard({ title, value, sub, highlight }) {
-  return (
-    <div
-      className={`rounded-2xl border p-6 ${
-        highlight ? 'border-teal/50 bg-navy-700' : 'border-border bg-surface-raised'
-      }`}
-    >
-      <p className="text-sm text-ink-muted">{title}</p>
-      <p className="tabular mt-2 text-3xl font-bold text-ink">{value}</p>
-      <p className="mt-2 text-sm text-ink-muted">{sub}</p>
-    </div>
-  )
+function usdMsrp(n) {
+  return `$${Number(n).toLocaleString()}`
 }

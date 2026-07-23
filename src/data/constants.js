@@ -31,6 +31,16 @@ export const DEPRECIATION_DRIVERS = [
   { key: 'msrp', label: 'MSRP', importance: 0.21 },
 ];
 
+// Secondary categorical drivers (make, powertrain). Smaller importances that
+// round out the top three to ~100% for the drivers breakdown chart.
+export const SECONDARY_DRIVERS = [
+  { key: 'make', label: 'Make', importance: 0.021 },
+  { key: 'fuelType', label: 'Fuel Type', importance: 0.012 },
+];
+
+// Full ordered driver set for the breakdown chart (sums to 1.0).
+export const ALL_DRIVERS = [...DEPRECIATION_DRIVERS, ...SECONDARY_DRIVERS];
+
 // NPV / financing assumptions.
 export const NPV = {
   discountRate: 0.07, // 7% annual discount rate (cost of capital, for cash flows)
