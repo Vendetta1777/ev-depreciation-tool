@@ -1,0 +1,13 @@
+{
+  "generated_from": [
+    "fueleconomy.gov/vehicles.csv",
+    "NHTSA vPIC"
+  ],
+  "start_year": 2012,
+  "count": 24773,
+  "gzip_bytes": 345777,
+  "mode": "single",
+  "files": [
+    "catalog.json"
+  ]
+}
