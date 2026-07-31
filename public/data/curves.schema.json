@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ev-depreciation-tool/curves.schema.json",
+  "title": "Published value-retention curves",
+  "description": "Schema for public/data/curves.json — cited 5-year retention curves for named models and segment fallbacks. See meta.filling_instructions.",
+  "type": "object",
+  "required": ["meta", "models", "segments"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "required": ["powertrains", "body_classes", "price_bands", "price_band_bounds"],
+      "properties": {
+        "powertrains": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "body_classes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "price_bands": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "price_band_bounds": {
+          "type": "object",
+          "required": ["budget_max", "premium_min"],
+          "properties": {
+            "budget_max": { "type": "number", "exclusiveMinimum": 0 },
+            "premium_min": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/curveRow" }
+    },
+    "segments": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/curveRow" }
+    }
+  },
+  "definitions": {
+    "curveRow": {
+      "type": "object",
+      "required": [
+        "key",
+        "powertrain",
+        "body_class",
+        "price_band",
+        "retention",
+        "spread_pct",
+        "source",
+        "source_year",
+        "source_url",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "powertrain": { "type": "string" },
+        "body_class": { "type": "string" },
+        "price_band": { "type": "string" },
+        "retention": {
+          "description": "y1..y5, fraction of MSRP retained. null entries are TODO placeholders.",
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "oneOf": [
+              { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+              { "type": "null" }
+            ]
+          }
+        },
+        "spread_pct": {
+          "description": "Observed variation across sources, as a percentage. null while TODO.",
+          "oneOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+        },
+        "source": { "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }] },
+        "source_year": {
+          "oneOf": [{ "type": "integer", "minimum": 2000 }, { "type": "null" }]
+        },
+        "source_url": {
+          "oneOf": [{ "type": "string", "format": "uri", "minLength": 1 }, { "type": "null" }]
+        },
+        "evidence": {
+          "description": "Required on ready rows: is R5 a published segment average or derived/inferred.",
+          "oneOf": [{ "type": "string", "enum": ["published", "derived"] }, { "type": "null" }]
+        },
+        "shape_assumption": {
+          "description": "Required on ready rows: how y1..y4 were modeled from the sourced y5.",
+          "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "source_note": {
+          "description": "Required on ready rows: caveats (e.g. asking-price basis, derivation basis).",
+          "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "status": { "type": "string", "enum": ["todo", "ready"] }
+      }
+    }
+  }
+}

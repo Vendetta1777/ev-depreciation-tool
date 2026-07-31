@@ -1,12 +1,11 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import NavBar from './components/NavBar'
 import ScrollProgress from './components/ScrollProgress'
 import BackToTop from './components/BackToTop'
 import PageTransition from './components/PageTransition'
 import Landing from './pages/Landing'
-import InputForm from './pages/InputForm'
-import Results from './pages/Results'
+import Decide from './pages/Decide'
 import About from './pages/About'
 
 /**
@@ -18,9 +17,10 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
-        <Route path="/estimate" element={<PageTransition><InputForm /></PageTransition>} />
-        <Route path="/results" element={<PageTransition><Results /></PageTransition>} />
+        <Route path="/decide" element={<PageTransition><Decide /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+        {/* Old /estimate and /results flow removed — one engine now. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   )

@@ -1,0 +1,1591 @@
+{
+  "$schema": "./curves.schema.json",
+  "meta": {
+    "description": "5-year value-retention curves from published/cited sources. Each row: fraction of original MSRP retained at the end of years 1–5 (US market, nominal). Named-model curves are matched exactly; segment rows are the fallback when no named curve exists. Replaces the cancelled ML-training approach — no model, no dataset.",
+    "powertrains": [
+      "EV",
+      "ICE",
+      "Hybrid",
+      "PHEV",
+      "Diesel",
+      "FCV"
+    ],
+    "body_classes": [
+      "sedan",
+      "hatchback",
+      "suv",
+      "truck",
+      "minivan",
+      "sports"
+    ],
+    "price_bands": [
+      "budget",
+      "mid",
+      "premium"
+    ],
+    "price_band_bounds": {
+      "budget_max": 35000,
+      "premium_min": 60000,
+      "note": "MSRP < budget_max → budget; MSRP >= premium_min → premium; otherwise mid."
+    },
+    "model_key_convention": "slug(make)-slug(model), e.g. \"tesla-model-3\" (lowercase, non-alphanumeric → \"-\").",
+    "segment_key_convention": "seg-{powertrain-lowercase}-{body_class}-{price_band}, e.g. \"seg-ev-suv-mid\".",
+    "retention_definition": "retention[i] = resale value at end of year (i+1) as a fraction of original MSRP. Must be strictly decreasing and within (0,1).",
+    "filling_instructions": "For each row fill retention[y1..y5], spread_pct, source, source_year, source_url, then set status to \"ready\". Do NOT invent numbers — every ready row must cite a published source with a URL. Run `npm run validate:curves` to check; `--strict` also fails on any remaining TODO."
+  },
+  "models": [
+    {
+      "key": "tesla-model-3",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "tesla-model-y",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "tesla-model-s",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "tesla-model-x",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "tesla-cybertruck",
+      "powertrain": "EV",
+      "body_class": "truck",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "rivian-r1t",
+      "powertrain": "EV",
+      "body_class": "truck",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "rivian-r1s",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ford-mustang-mach-e",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ford-f-150-lightning",
+      "powertrain": "EV",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "chevrolet-bolt-ev",
+      "powertrain": "EV",
+      "body_class": "hatchback",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "chevrolet-bolt-euv",
+      "powertrain": "EV",
+      "body_class": "hatchback",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "bmw-i4",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "bmw-ix",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "mercedes-eqs",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "mercedes-eqe",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "audi-e-tron",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "audi-q4-e-tron",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "hyundai-ioniq-5",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "hyundai-ioniq-6",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "kia-ev6",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "kia-ev9",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "volkswagen-id-4",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "lucid-air",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "porsche-taycan",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "nissan-leaf",
+      "powertrain": "EV",
+      "body_class": "hatchback",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "nissan-ariya",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-bz4x",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "polestar-2",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "volvo-xc40-recharge",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-camry",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-corolla",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-rav4",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-highlander",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-tacoma",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-tundra",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "honda-accord",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "honda-civic",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "honda-cr-v",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "honda-pilot",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ford-f-150",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ford-mustang",
+      "powertrain": "ICE",
+      "body_class": "sports",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ford-explorer",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "chevrolet-silverado",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "chevrolet-equinox",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "chevrolet-tahoe",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "bmw-3-series",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "bmw-5-series",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "bmw-x5",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "mercedes-c-class",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "mercedes-e-class",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "audi-a4",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "audi-q5",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "subaru-outback",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "subaru-forester",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "jeep-wrangler",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "jeep-grand-cherokee",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "ram-1500",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "gmc-sierra",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "lexus-rx",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "porsche-911",
+      "powertrain": "ICE",
+      "body_class": "sports",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-prius",
+      "powertrain": "Hybrid",
+      "body_class": "hatchback",
+      "price_band": "budget",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "toyota-rav4-hybrid",
+      "powertrain": "Hybrid",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    }
+  ],
+  "segments": [
+    {
+      "key": "seg-ev-hatchback-budget",
+      "powertrain": "EV",
+      "body_class": "hatchback",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-sedan-budget",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-sedan-mid",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-sedan-premium",
+      "powertrain": "EV",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-suv-mid",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-suv-premium",
+      "powertrain": "EV",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        0.8,
+        0.6777,
+        0.5741,
+        0.4863,
+        0.412
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes an EV-overall 5yr retention (0.412) but no EV body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ev-truck-mid",
+      "powertrain": "EV",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "seg-ev-truck-premium",
+      "powertrain": "EV",
+      "body_class": "truck",
+      "price_band": "premium",
+      "retention": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "spread_pct": null,
+      "source": null,
+      "source_year": null,
+      "source_url": null,
+      "status": "todo"
+    },
+    {
+      "key": "seg-ice-sedan-budget",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.7696,
+        0.7403,
+        0.7121,
+        0.685
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: inferred from the mainstream-sedan cluster (Civic/Corolla/Accord/Camry, ~28-36% depreciation). iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-sedan-mid",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.7265,
+        0.6597,
+        0.5991,
+        0.544
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale data — 'luxury compact car' category average",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/car/bmw-3-series/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Published iSeeCars 'luxury compact car' category average (45.6% 5yr depreciation) — the exact bucket for 3 Series/C-Class/A4 (3 Series itself 46.8%, retention 0.532). NOTE: this comes from iSeeCars' per-model resale dataset (~15M vehicles), a DIFFERENT dataset from the annual 5-Year Depreciation Study (~800k). The 45.6% here is coincidentally identical to the annual study's OVERALL figure — they are not the same measure and must not be conflated. iSeeCars uses asking price, not transaction price; retention is mildly optimistic."
+    },
+    {
+      "key": "seg-ice-sedan-premium",
+      "powertrain": "ICE",
+      "body_class": "sedan",
+      "price_band": "premium",
+      "retention": [
+        0.8,
+        0.662,
+        0.5477,
+        0.4532,
+        0.375
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: inferred from the luxury-sedan cluster (7 Series/Ghibli/A8/5 Series, ~60-67% depreciation). iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-suv-budget",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.7268,
+        0.6603,
+        0.5999,
+        0.545
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Published iSeeCars Small SUV segment average. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-suv-mid",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.707,
+        0.6248,
+        0.5522,
+        0.488
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Published iSeeCars Midsize SUV segment average. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-suv-premium",
+      "powertrain": "ICE",
+      "body_class": "suv",
+      "price_band": "premium",
+      "retention": [
+        0.8,
+        0.6706,
+        0.5621,
+        0.4712,
+        0.395
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: inferred from the luxury-SUV cluster (Q7/QX60/Discovery/Levante, ~61-64% depreciation). iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-truck-budget",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.7548,
+        0.7122,
+        0.672,
+        0.634
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "derived as mean of midsize trucks listed in the iSeeCars 2025 truck table; not a published segment average (Tacoma 26.0, Ranger 34.7, Gladiator 35.6, Canyon 38.1, Frontier 38.3, Colorado 40.9, Ridgeline 42.4 → mean 36.6% depreciation). iSeeCars uses asking price, not transaction price; retention is mildly optimistic."
+    },
+    {
+      "key": "seg-ice-truck-mid",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.7432,
+        0.6905,
+        0.6415,
+        0.596
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Published iSeeCars Truck segment average. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-ice-truck-premium",
+      "powertrain": "ICE",
+      "body_class": "truck",
+      "price_band": "premium",
+      "retention": [
+        0.8,
+        0.7356,
+        0.6765,
+        0.622,
+        0.572
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "derived as mean of full-size trucks listed in the iSeeCars 2025 truck table; not a published segment average (Tundra 29.1, Silverado 41.5, Sierra 41.6, Ram 42.8, F-150 43.4, Titan XD 47.9, Titan 48.1, Ram Classic 48.1 → mean 42.8% depreciation). iSeeCars uses asking price, not transaction price; retention is mildly optimistic."
+    },
+    {
+      "key": "seg-hybrid-sedan-budget",
+      "powertrain": "Hybrid",
+      "body_class": "sedan",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.7423,
+        0.6888,
+        0.6391,
+        0.593
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes a hybrid-overall 5yr retention (0.593) but no hybrid body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-hybrid-sedan-mid",
+      "powertrain": "Hybrid",
+      "body_class": "sedan",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.7423,
+        0.6888,
+        0.6391,
+        0.593
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes a hybrid-overall 5yr retention (0.593) but no hybrid body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-hybrid-suv-budget",
+      "powertrain": "Hybrid",
+      "body_class": "suv",
+      "price_band": "budget",
+      "retention": [
+        0.8,
+        0.7423,
+        0.6888,
+        0.6391,
+        0.593
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes a hybrid-overall 5yr retention (0.593) but no hybrid body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    },
+    {
+      "key": "seg-hybrid-suv-mid",
+      "powertrain": "Hybrid",
+      "body_class": "suv",
+      "price_band": "mid",
+      "retention": [
+        0.8,
+        0.7423,
+        0.6888,
+        0.6391,
+        0.593
+      ],
+      "spread_pct": 0,
+      "source": "iSeeCars 5-Year Depreciation Study, 2025 edition",
+      "source_year": 2025,
+      "source_url": "https://www.iseecars.com/cars-that-hold-their-value-study",
+      "status": "ready",
+      "evidence": "derived",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Derived — not a published segment average: iSeeCars publishes a hybrid-overall 5yr retention (0.593) but no hybrid body/price splits; applied here as the segment estimate. iSeeCars models MSRP vs used ASKING price, not transaction price; retention figures are mildly optimistic."
+    }
+  ]
+}

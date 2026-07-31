@@ -67,7 +67,7 @@ export default function Landing() {
           </motion.p>
           <motion.div variants={item} className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              to="/estimate"
+              to="/decide"
               className="w-full rounded-lg bg-teal px-8 py-3.5 font-semibold text-navy transition hover:bg-teal-400 sm:w-auto"
             >
               Check my numbers
