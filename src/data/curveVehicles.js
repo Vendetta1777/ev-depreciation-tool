@@ -21,7 +21,7 @@ export const CURVE_VEHICLES = [
   { make: 'Rivian', model: 'R1S', powertrain: 'EV', body_class: 'suv', msrp: 76000 },
 
   // ── Gas / ICE ─────────────────────────────────────────────
-  { make: 'Toyota', model: 'Camry', powertrain: 'ICE', body_class: 'sedan', msrp: 28000 },
+  { make: 'Toyota', model: 'Camry', powertrain: 'Hybrid', body_class: 'sedan', msrp: 30000 },
   { make: 'Honda', model: 'Civic', powertrain: 'ICE', body_class: 'sedan', msrp: 25000 },
   { make: 'Honda', model: 'Accord', powertrain: 'ICE', body_class: 'sedan', msrp: 29000 },
   { make: 'BMW', model: '3 Series', powertrain: 'ICE', body_class: 'sedan', msrp: 44000 },

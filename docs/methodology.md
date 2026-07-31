@@ -18,12 +18,33 @@ vehicle is expected to be worth at the end of each year. Curves live in
 
 ### Observed vs. modeled (curve shape)
 
-- **Year 5 is observed** — it is the study's reported 5-year retention.
-- **Years 1–4 are modeled**, not observed. We assume a **declining-balance**
-  shape: a documented **20% drop in year one**, then a constant annual rate
-  thereafter, solved so the curve lands exactly on the observed year-5 value.
+**Every** row — named model and segment alike — uses the same shape, recorded in
+`shape_assumption`: only the **5-year** retention is observed; years 1–4 follow a
+declining-balance curve (a documented 20% year-one drop, then a constant rate)
+solved to land exactly on the 5-year value.
 
-Every row records this in its `shape_assumption`.
+Named-model 5-year figures come from the iSeeCars **per-model** resale pages
+(~15M-vehicle dataset, 2026); segment figures come from the annual 5-Year study
+(2025). Both are asking-price based.
+
+#### Why not a two-point (3-year + 5-year) fit?
+
+The per-model pages also publish a 3-year figure, and we tried anchoring each
+named curve to both the 3- and 5-year points. **We rejected it**, and the reason
+is worth stating because it is a genuine data-quality finding, not a coding
+choice.
+
+iSeeCars&rsquo; 3-year and 5-year numbers are **cross-sectional cohorts** —
+different model years priced at one moment — not two points along a single
+vehicle&rsquo;s life. Fitting a curve through both implies depreciation that
+**accelerates** with age: a Honda Civic would lose ~2.2%/yr in years 1–3 then
+~9%/yr in years 4–5; a RAV4 ~1.9% then ~10.9%. That inverts the well-established
+front-loaded shape (biggest drop in year one). The distortion is an artifact of
+the cohorts, not the vehicles: 3-year-old **ICE** cars (2023 model years) carry
+chip-shortage-era MSRP inflation, and 3-year-old **EVs** carry the 2023
+price-cut and credit-expiry shock — both inflate the *new-price* baseline the
+3-year depreciation is measured against. So we keep only the 5-year anchor and
+the modeled shape for every row.
 
 ### Published vs. derived figures
 
@@ -111,6 +132,16 @@ residual (raise the spread) or otherwise deviating from a fair deal.
   annual mileage, so we don't fabricate one. High- or low-mileage cars will
   deviate from the shown resale.
 - **Years 1–4 are modeled, only year 5 is observed** (see curve shape above).
+- **3-year figures exist but aren't usable for curve shape.** The source pages
+  publish a 3-year number, but it is a different model-year cohort, not a second
+  point on one car's curve (see "Why not a two-point fit?"). We don't use it.
+- **Exact vs. fallback can differ by dataset vintage.** An exact named match uses
+  the 2026 per-model dataset; a segment fallback uses the 2025 annual study. Two
+  otherwise-similar cars can differ by a few points purely from that vintage gap,
+  not from the vehicles.
+- **Some models are listed under one powertrain.** iSeeCars reports the Camry as
+  hybrid-only (true of the 2025+ Camry), so the named Camry curve is the hybrid;
+  it does not represent older gas Camrys. This is noted on the row's citation.
 - **Asking price, not transaction price** — retention is mildly optimistic.
 - **The 60-month lease term is a simplification.** Real leases are typically
   24–36 months; we model a 5-year lease so it lines up with the 5-year buy

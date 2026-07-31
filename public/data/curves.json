@@ -40,17 +40,20 @@
       "body_class": "sedan",
       "price_band": "mid",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.6947,
+        0.6033,
+        0.5239,
+        0.455
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/tesla-model-3/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "tesla-model-y",
@@ -58,17 +61,20 @@
       "body_class": "suv",
       "price_band": "mid",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.6806,
+        0.579,
+        0.4925,
+        0.419
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/tesla-model-y/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "tesla-model-s",
@@ -166,17 +172,20 @@
       "body_class": "suv",
       "price_band": "mid",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.6689,
+        0.5593,
+        0.4676,
+        0.391
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/ford-mustang-mach-e/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "ford-f-150-lightning",
@@ -346,17 +355,20 @@
       "body_class": "suv",
       "price_band": "mid",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.6838,
+        0.5845,
+        0.4996,
+        0.427
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/hyundai-ioniq-5/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "hyundai-ioniq-6",
@@ -472,17 +484,20 @@
       "body_class": "hatchback",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.6602,
+        0.5448,
+        0.4496,
+        0.371
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/nissan-leaf/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Leaf hatchback. iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "nissan-ariya",
@@ -558,21 +573,24 @@
     },
     {
       "key": "toyota-camry",
-      "powertrain": "ICE",
+      "powertrain": "Hybrid",
       "body_class": "sedan",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7616,
+        0.725,
+        0.6902,
+        0.657
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/toyota-camry/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "This curve is the hybrid Camry — the 2025+ Camry is hybrid-only — and does not represent older gas Camrys. iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "toyota-corolla",
@@ -598,17 +616,20 @@
       "body_class": "suv",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7872,
+        0.7746,
+        0.7622,
+        0.75
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/toyota-rav4/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Standard (gas) RAV4. iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "toyota-highlander",
@@ -670,17 +691,20 @@
       "body_class": "sedan",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7729,
+        0.7467,
+        0.7214,
+        0.697
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/honda-accord/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "honda-civic",
@@ -688,17 +712,20 @@
       "body_class": "sedan",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7932,
+        0.7864,
+        0.7797,
+        0.773
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/honda-civic/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "Civic sedan. iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "honda-cr-v",
@@ -706,17 +733,20 @@
       "body_class": "suv",
       "price_band": "budget",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7768,
+        0.7542,
+        0.7323,
+        0.711
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/honda-cr-v/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "honda-pilot",
@@ -742,17 +772,20 @@
       "body_class": "truck",
       "price_band": "mid",
       "retention": [
-        null,
-        null,
-        null,
-        null,
-        null
+        0.8,
+        0.7509,
+        0.7048,
+        0.6616,
+        0.621
       ],
-      "spread_pct": null,
-      "source": null,
-      "source_year": null,
-      "source_url": null,
-      "status": "todo"
+      "spread_pct": 0,
+      "source": "iSeeCars per-model resale value data",
+      "source_year": 2026,
+      "source_url": "https://www.iseecars.com/car/ford-f-150/resale-value",
+      "status": "ready",
+      "evidence": "published",
+      "shape_assumption": "y5 observed; y1-y4 modeled as declining balance, 20% year-one drop, constant rate thereafter, solved to hit y5",
+      "source_note": "iSeeCars per-model resale value data (~15M-vehicle dataset, 2026), distinct from the annual 5-Year Depreciation Study used for segment fallbacks. 5-year retention is observed; earlier years use the same modeled declining-balance shape as segments. Asking-price basis, so retention is mildly optimistic."
     },
     {
       "key": "ford-mustang",

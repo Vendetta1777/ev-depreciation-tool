@@ -38,13 +38,23 @@ const readyDoc = {
 }
 
 test('named model exists but is TODO → falls through to segment (never a null curve)', () => {
-  const v = { make: 'Tesla', model: 'Model 3', powertrain: 'EV', body_class: 'Midsize Cars', msrp: 40000, year: 2022 }
+  // BMW i4's named row is still TODO; it must degrade to the EV-sedan-mid segment.
+  const v = { make: 'BMW', model: 'i4', powertrain: 'EV', body_class: 'Midsize Cars', msrp: 52000, year: 2022 }
   const r = resolveCurve(v, realDoc)
   assert.equal(r.matchLevel, 'segment')
   assert.notEqual(r.curve, null)
   assert.equal(r.curve.key, 'seg-ev-sedan-mid')
-  assert.match(r.note, /No Tesla Model 3 curve available/)
+  assert.match(r.note, /No BMW i4 curve available/)
   assert.match(r.note, /mid-priced EV sedan average/)
+})
+
+test('a filled named model resolves EXACT (Model 3 now has a per-model curve)', () => {
+  const v = { make: 'Tesla', model: 'Model 3', powertrain: 'EV', body_class: 'Midsize Cars', msrp: 40000, year: 2022 }
+  const r = resolveCurve(v, realDoc)
+  assert.equal(r.matchLevel, 'exact')
+  assert.equal(r.curve.key, 'tesla-model-3')
+  assert.equal(r.curve.status, 'ready')
+  assert.equal(r.note, null)
 })
 
 test('ready named model → exact match, no note', () => {
@@ -106,10 +116,11 @@ test('powertrain with no segment (PHEV) → refuse, not a wrong fallback', () =>
 })
 
 test('legacy fuelType is accepted in place of powertrain', () => {
-  const v = { make: 'Honda', model: 'Civic', fuelType: 'ICE', body_class: 'Compact Cars', msrp: 25000, year: 2022 }
+  // Subaru Outback has no named curve → segment path exercises the fuelType map.
+  const v = { make: 'Subaru', model: 'Outback', fuelType: 'ICE', body_class: 'Small Sport Utility Vehicle 4WD', msrp: 29000, year: 2022 }
   const r = resolveCurve(v, realDoc)
   assert.equal(r.matchLevel, 'segment')
-  assert.equal(r.curve.key, 'seg-ice-sedan-budget')
+  assert.equal(r.curve.key, 'seg-ice-suv-budget')
 })
 
 test('priceBand honors the document bounds', () => {
