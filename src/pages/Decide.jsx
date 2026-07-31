@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   ComposedChart,
   Area,
@@ -162,7 +163,10 @@ export default function Decide() {
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-ink sm:text-3xl">Buy or lease?</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          Five-year cost, from published depreciation data. Every figure is cited.
+          Five-year cost, from published depreciation data. Every figure is cited.{' '}
+          <Link to="/methodology" className="text-teal-400 underline decoration-dotted underline-offset-2 hover:text-teal">
+            How this is computed →
+          </Link>
         </p>
       </header>
 

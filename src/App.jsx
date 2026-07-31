@@ -6,6 +6,7 @@ import BackToTop from './components/BackToTop'
 import PageTransition from './components/PageTransition'
 import Landing from './pages/Landing'
 import Decide from './pages/Decide'
+import Methodology from './pages/Methodology'
 import About from './pages/About'
 
 /**
@@ -18,6 +19,7 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         <Route path="/decide" element={<PageTransition><Decide /></PageTransition>} />
+        <Route path="/methodology" element={<PageTransition><Methodology /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
         {/* Old /estimate and /results flow removed — one engine now. */}
         <Route path="*" element={<Navigate to="/" replace />} />

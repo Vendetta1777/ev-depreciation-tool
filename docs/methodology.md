@@ -90,11 +90,19 @@ which the tool exposes as inputs:
   you.
 - **Money-factor markup** — a lease APR above your discount rate makes leasing
   worse.
-- **Fees** — acquisition (~$895) and disposition (~$395) tilt toward buying.
+- **Fees** — an acquisition fee (default **$895**, typically ~$595–$1,095) and a
+  disposition fee (default **$395**, typically ~$300–$500) tilt toward buying.
+  Like the residual spread, **these defaults are assumptions, not sourced
+  figures** — real fees vary by lender and vehicle; adjust them for your quote.
 - **Tax treatment** — not modeled in v1.
 
-With everything at its fair default, expect the verdict to favor **buying by
-roughly the fees**, and to flip to leasing only as you raise the residual spread.
+**Why the default answer is "Buy."** At the fair default (residual spread 0,
+money factor = discount rate) the financing sides are equal by construction, so
+the *only* thing left separating them is the fees. That means the tool's
+out-of-the-box verdict is **"Buy," by roughly the fees, for essentially every
+car** — this is a property of the fee assumptions, **not a finding about the
+vehicle**. A lease only wins once you tell the tool the lender is subventing the
+residual (raise the spread) or otherwise deviating from a fair deal.
 
 ## Known limitations
 
