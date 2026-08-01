@@ -2,11 +2,11 @@
 
 # ⚡ EV Depreciation Tool
 
-**Personalized 5-year depreciation forecasts and a buy-vs-lease NPV recommendation for electric vehicles — powered by IEEE research on 15,000 vehicles.**
+**Five-year cost comparisons built on published depreciation data. Buy vs. lease one car, or EV vs. an equivalent gas car — every figure cited, estimates labeled as estimates.**
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-ev--depreciation--tool.vercel.app-00B4D8?style=for-the-badge)](https://ev-depreciation-tool.vercel.app)
 
-[**🚀 Live Demo**](https://ev-depreciation-tool.vercel.app) · [**Calculator**](https://ev-depreciation-tool.vercel.app/estimate) · [**The Research**](https://ev-depreciation-tool.vercel.app/about)
+[**🚀 Live**](https://ev-depreciation-tool.vercel.app) · [**Buy or lease**](https://ev-depreciation-tool.vercel.app/decide) · [**EV vs. gas**](https://ev-depreciation-tool.vercel.app/compare) · [**Methodology**](https://ev-depreciation-tool.vercel.app/methodology)
 
 </div>
 
@@ -14,69 +14,51 @@
 
 ## Overview
 
-Electric vehicles lose value on a different curve than gas cars — and that gap changes the math on whether you should **buy or lease**. EV Depreciation Tool turns an IEEE research paper into an interactive projection: enter your vehicle, and it models a 10-year depreciation curve, estimates 5-year resale value, and returns a clear buy-vs-lease recommendation with the dollar advantage spelled out.
+Depreciation is the biggest cost of owning a car, and it changes the math on two everyday decisions. This tool answers both over a five-year horizon:
 
-## Screenshots
+- **Buy vs. lease** a specific car — a present-value comparison where the real lever is the lender's residual assumption, not the depreciation curve.
+- **EV vs. gas** — which of two vehicles you choose costs less to own, total.
 
-<div align="center">
+There is **no trained model and no private dataset**. Retention comes from published five-year figures (iSeeCars), and every number on a result links to its source.
 
-### Landing
-![Landing page](docs/screenshots/landing.jpg)
+## How it works
 
-### Recommendation
-![Buy-vs-lease recommendation](docs/screenshots/results.jpg)
-
-### Depreciation dashboard
-![Depreciation curve and value projection](docs/screenshots/dashboard.jpg)
-
-</div>
-
-## The research behind it
-
-The projection logic is grounded in an IEEE paper that analyzed **15,000 vehicles** using **Random Forest** and **XGBoost** models (best model **R² = 0.990**). Headline findings baked into the tool:
-
-| Finding | Value |
-| --- | --- |
-| EVs depreciate faster than ICE | **~3.6 pp/yr** |
-| 5-year value retention — EV | **30.3%** |
-| 5-year value retention — ICE | **33.9%** |
-| 5-year value retention — Tesla | **41.4%** |
-| Budget EVs (&lt;$35k) | **17.9%** |
-| Luxury EVs (&gt;$50k) | **35.6%** |
-| Top depreciation drivers | Vehicle Age **40.3%** · Model Year **35.4%** · MSRP **21%** |
-
-Buy vs lease is compared as a **5-year net present value** at a **7% discount rate**, using EV/ICE lease rates (1.2% / 1.5% of MSRP per month), maintenance ($500 / $1,200 per year), and energy costs ($0.04 / $0.12 per mile). All figures live in [`src/data/constants.js`](src/data/constants.js) as a single source of truth, and the engine is validated against the paper's published deltas (`npm run validate`).
+- **Curves** (`public/data/curves.json`) — 30 five-year retention curves: exact named-model rows plus powertrain × body × price-band segment fallbacks. Each row is tagged `published` or `derived`, carries a `source_url`, and is checked by `npm run validate:curves`.
+- **Resolution** (`src/lib/curves.js`) — `resolveCurve` matches a vehicle exactly where a named curve exists, falls back to its segment otherwise, and **refuses** (never guesses) for pre-2012 or unclassifiable vehicles.
+- **Finance** (`src/lib/finance.ts`) — pure engine: buy-vs-lease NPV, 5-year TCO, breakeven, and the EV-vs-gas comparison. Provenance travels with every result, so the UI never renders a derived figure like a published one.
+- **Picker** (`src/lib/catalog.js`) — fuzzy free-text search over the ~24k-row Phase 0 catalog (MiniSearch), plus a model-year input.
+- **Methodology** (`/methodology`, from `docs/methodology.md`) — where every figure traces, what's observed vs. modeled, and the tool's limitations.
 
 ## Tech stack
 
-- **Framework:** React 19 + Vite
-- **Styling:** Tailwind CSS v4 (custom navy/teal design tokens)
-- **Charts:** Recharts · **Animation:** Framer Motion · **Routing:** React Router
-- **HTTP:** axios
+- **Framework:** React 19 + Vite · **Styling:** Tailwind CSS v4 (navy/teal tokens)
+- **Charts:** Recharts · **Animation:** Framer Motion · **Routing:** React Router · **Search:** MiniSearch
 - **Deploy:** Vercel (SPA rewrites for client-side routing)
 
 ## Project structure
 
 ```
 src/
-  components/   NavBar + landing/ + results/ UI building blocks
-  pages/        Landing · InputForm (/estimate) · Results (/results) · About
-  hooks/        useProjection — memoized projection state
-  utils/        projections.js (the engine) + formatting helpers
-  data/         constants.js (research SOT) + vehicles.js (catalog)
-scripts/
-  validate.mjs  asserts the engine reproduces the paper's figures
+  lib/          curves.js · finance.ts · catalog.js   (engine + data access)
+  components/    NavBar · VehicleCombobox / VehicleSelect · uiBits · landing/ParticleNetwork
+  pages/         Landing · Decide (/decide) · Compare (/compare) · Methodology · About
+  data/          curveVehicles.js   (quick-pick chips)
+public/data/     curves.json (+ schema) · catalog.json
+scripts/         validate-curves.mjs
+tests/           node --test — finance · resolveCurve · catalog
+docs/            methodology.md   (source of record)
 ```
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev       # local dev server
-npm run build     # production build → dist/
-npm run validate  # check the engine against the paper's figures
+npm run dev              # local dev server
+npm run build            # production build → dist/
+npm test                 # unit tests (node --test)
+npm run validate:curves  # validate the curve data
 ```
 
-## Credits
+## Author
 
-Built by **Ved Shrinivas**, American School of Dubai · IEEE Research 2025 · Mentor: **Vinay Vishwakarma**
+Built by **Ved Shrinivas**.

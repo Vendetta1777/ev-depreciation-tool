@@ -66,37 +66,3 @@ body {
   font-feature-settings: 'tnum';
 }
 
-/* Marquee ticker: content is duplicated, so -50% loops seamlessly. */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.marquee-track {
-  animation: marquee 32s linear infinite;
-}
-
-/* Gentle pulsing gradient for the results verdict banner. */
-@keyframes verdict-pulse {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-.verdict-pulse {
-  background-size: 200% 200%;
-  animation: verdict-pulse 6s ease infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track,
-  .verdict-pulse {
-    animation: none;
-  }
-}
