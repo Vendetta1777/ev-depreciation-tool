@@ -646,6 +646,8 @@ export interface CompareSideResult {
   provenance: Provenance | null
   /** Set when the side is not computable (pending / refuse) — no verdict then. */
   note: string | null
+  /** Why it's not ready: 'refuse' (out of scope, e.g. pre-2012) vs 'pending' (curve TODO). */
+  reason: 'refuse' | 'pending' | null
 }
 
 export interface CompareBreakeven {
@@ -695,14 +697,17 @@ function sideResult(side: CompareSide, p: CompareParams): CompareSideResult {
       tco: tco(sideInput(side, p), side.resolved),
       provenance: provenanceOf(side.resolved),
       note: null,
+      reason: null,
     }
   } catch (e) {
+    const refused = side.resolved.matchLevel === 'refuse'
     return {
       label: side.label,
       ready: false,
       tco: null,
       provenance: side.resolved.curve ? provenanceOf(side.resolved) : null,
-      note: side.resolved.note ?? (e as Error).message,
+      note: refused ? (side.resolved.note ?? (e as Error).message) : (e as Error).message,
+      reason: refused ? 'refuse' : 'pending',
     }
   }
 }

@@ -5,23 +5,23 @@ import { compareVehicles } from '../lib/finance.ts'
 import { CURVE_VEHICLES, DEFAULT_YEAR } from '../data/curveVehicles.js'
 import { usd } from '../utils/format.js'
 import { ProvenanceChip, Citation, Slider, StatRow } from '../components/uiBits.jsx'
+import VehicleSelect from '../components/VehicleSelect.jsx'
 
-const label = (v) => `${DEFAULT_YEAR} ${v.make} ${v.model}`
+const label = (v, year) => `${year} ${v.make} ${v.model}`
 
 /** Opposite powertrain class, closest MSRP — a suggestion, not an equivalence claim. */
-function suggestEquivalent(aIdx) {
-  const a = CURVE_VEHICLES[aIdx]
-  const aIsEv = a.powertrain === 'EV'
-  let best = -1
+function suggestEquivalent(vehicle, msrp) {
+  const aIsEv = vehicle.powertrain === 'EV'
+  let best = null
   let bestDiff = Infinity
-  CURVE_VEHICLES.forEach((v, i) => {
-    if ((v.powertrain === 'EV') === aIsEv) return
-    const diff = Math.abs(v.msrp - a.msrp)
+  for (const v of CURVE_VEHICLES) {
+    if ((v.powertrain === 'EV') === aIsEv) continue
+    const diff = Math.abs(v.msrp - msrp)
     if (diff < bestDiff) {
       bestDiff = diff
-      best = i
+      best = v
     }
-  })
+  }
   return best
 }
 
@@ -41,45 +41,14 @@ function breakevenSentence(name, value, loser) {
   }
 }
 
-function VehiclePicker({ title, idx, msrp, onPick, onMsrp, extra }) {
-  return (
-    <div className="rounded-2xl border border-border bg-surface-raised/60 p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{title}</span>
-        {extra}
-      </div>
-      <select
-        value={idx}
-        onChange={(e) => onPick(Number(e.target.value))}
-        className="mb-3 w-full rounded-lg border border-border bg-navy px-3 py-2.5 text-ink"
-      >
-        {CURVE_VEHICLES.map((v, i) => (
-          <option key={`${v.make}-${v.model}`} value={i}>
-            {label(v)} · {v.powertrain}
-          </option>
-        ))}
-      </select>
-      <label className="block">
-        <span className="mb-1 block text-xs text-ink-muted">MSRP</span>
-        <input
-          type="number"
-          value={msrp}
-          min={10000}
-          max={250000}
-          step={500}
-          onChange={(e) => onMsrp(Number(e.target.value))}
-          className="tabular w-full rounded-lg border border-border bg-navy px-3 py-2 text-ink"
-        />
-      </label>
-    </div>
-  )
-}
-
 function TcoPanel({ side }) {
   if (!side.ready) {
+    const heading = side.reason === 'refuse' ? 'not covered' : 'figures pending'
     return (
       <div className="rounded-2xl border border-warning/40 bg-warning/5 p-4">
-        <h3 className="text-sm font-bold text-warning">{side.label} — figures pending</h3>
+        <h3 className="text-sm font-bold text-warning">
+          {side.label} — {heading}
+        </h3>
         <p className="mt-1 text-xs text-ink">{side.note}</p>
       </div>
     )
@@ -106,14 +75,16 @@ function TcoPanel({ side }) {
   )
 }
 
+const ACCORD = CURVE_VEHICLES.find((v) => v.make === 'Honda' && v.model === 'Accord')
+
 export default function Compare() {
   const [doc, setDoc] = useState(null)
-  const [idxA, setIdxA] = useState(0) // Model 3
-  const [idxB, setIdxB] = useState(() => CURVE_VEHICLES.findIndex((v) => v.make === 'Honda' && v.model === 'Accord'))
+  const [vehA, setVehA] = useState(CURVE_VEHICLES[0]) // Model 3
+  const [vehB, setVehB] = useState(ACCORD)
+  const [yearA, setYearA] = useState(DEFAULT_YEAR)
+  const [yearB, setYearB] = useState(DEFAULT_YEAR)
   const [msrpA, setMsrpA] = useState(CURVE_VEHICLES[0].msrp)
-  const [msrpB, setMsrpB] = useState(
-    CURVE_VEHICLES[CURVE_VEHICLES.findIndex((v) => v.make === 'Honda' && v.model === 'Accord')].msrp,
-  )
+  const [msrpB, setMsrpB] = useState(ACCORD.msrp)
   const [milesPerYear, setMiles] = useState(12000)
   const [fuelPricePerGallon, setFuel] = useState(3.5)
   const [electricityPricePerKwh, setElec] = useState(0.17)
@@ -124,35 +95,33 @@ export default function Compare() {
     loadCurves().then(setDoc)
   }, [])
 
-  const pickA = (i) => {
-    setIdxA(i)
-    setMsrpA(CURVE_VEHICLES[i].msrp)
+  const selectA = (v) => {
+    setVehA(v)
+    if (typeof v.msrp === 'number') setMsrpA(v.msrp)
   }
-  const pickB = (i) => {
-    setIdxB(i)
-    setMsrpB(CURVE_VEHICLES[i].msrp)
+  const selectB = (v) => {
+    setVehB(v)
+    if (typeof v.msrp === 'number') setMsrpB(v.msrp)
   }
 
   const result = useMemo(() => {
     if (!doc) return null
-    const va = CURVE_VEHICLES[idxA]
-    const vb = CURVE_VEHICLES[idxB]
     const sideA = {
-      label: label(va),
-      resolved: resolveCurve({ ...va, year: DEFAULT_YEAR }, doc),
+      label: label(vehA, yearA),
+      resolved: resolveCurve({ ...vehA, year: yearA }, doc),
       msrp: msrpA,
-      powertrain: va.powertrain,
+      powertrain: vehA.powertrain,
       incentive: incentiveA,
     }
     const sideB = {
-      label: label(vb),
-      resolved: resolveCurve({ ...vb, year: DEFAULT_YEAR }, doc),
+      label: label(vehB, yearB),
+      resolved: resolveCurve({ ...vehB, year: yearB }, doc),
       msrp: msrpB,
-      powertrain: vb.powertrain,
+      powertrain: vehB.powertrain,
       incentive: incentiveB,
     }
     return compareVehicles(sideA, sideB, { milesPerYear, years: 5, fuelPricePerGallon, electricityPricePerKwh })
-  }, [doc, idxA, idxB, msrpA, msrpB, milesPerYear, fuelPricePerGallon, electricityPricePerKwh, incentiveA, incentiveB])
+  }, [doc, vehA, vehB, yearA, yearB, msrpA, msrpB, milesPerYear, fuelPricePerGallon, electricityPricePerKwh, incentiveA, incentiveB])
 
   const verdict = result?.verdict
   const be = result?.breakeven
@@ -175,26 +144,40 @@ export default function Compare() {
       </header>
 
       {/* Pickers */}
-      <section className="mb-6 grid gap-4 sm:grid-cols-2">
-        <VehiclePicker title="Vehicle A" idx={idxA} msrp={msrpA} onPick={pickA} onMsrp={setMsrpA} />
-        <VehiclePicker
-          title="Vehicle B"
-          idx={idxB}
-          msrp={msrpB}
-          onPick={pickB}
-          onMsrp={setMsrpB}
-          extra={
+      <section className="mb-3 grid gap-4 sm:grid-cols-2">
+        <VehicleSelect
+          title="Vehicle A"
+          vehicle={vehA}
+          year={yearA}
+          msrp={msrpA}
+          onVehicle={selectA}
+          onYear={setYearA}
+          onMsrp={setMsrpA}
+          chips={CURVE_VEHICLES.filter((v) => v.powertrain === 'EV').slice(0, 6)}
+        />
+        <div>
+          <div className="mb-1 flex items-center justify-end">
             <button
               type="button"
-              onClick={() => pickB(suggestEquivalent(idxA))}
+              onClick={() => selectB(suggestEquivalent(vehA, msrpA))}
               className="text-xs font-medium text-teal-400 hover:text-teal"
             >
-              ↺ Suggest an equivalent
+              ↺ Suggest an equivalent for A
             </button>
-          }
-        />
+          </div>
+          <VehicleSelect
+            title="Vehicle B"
+            vehicle={vehB}
+            year={yearB}
+            msrp={msrpB}
+            onVehicle={selectB}
+            onYear={setYearB}
+            onMsrp={setMsrpB}
+            chips={CURVE_VEHICLES.filter((v) => v.powertrain !== 'EV').slice(0, 6)}
+          />
+        </div>
       </section>
-      <p className="-mt-4 mb-6 text-xs text-ink-muted">
+      <p className="mb-6 text-xs text-ink-muted">
         Pick any two vehicles. &ldquo;Suggest an equivalent&rdquo; picks an opposite-powertrain match by price — it&rsquo;s
         a suggestion, not a claim the two are equivalent.
       </p>

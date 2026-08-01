@@ -15,6 +15,7 @@ import { compute } from '../lib/finance.ts'
 import { CURVE_VEHICLES, DEFAULT_VEHICLE_INDEX, DEFAULT_YEAR } from '../data/curveVehicles.js'
 import { usd, pct } from '../utils/format.js'
 import { ProvenanceChip, Citation, Slider, StatRow } from '../components/uiBits.jsx'
+import VehicleSelect from '../components/VehicleSelect.jsx'
 
 // ── One readable breakeven sentence per live variable ─────────────────
 function breakevenSentence(name, be, verdict) {
@@ -37,7 +38,8 @@ function breakevenSentence(name, be, verdict) {
 
 export default function Decide() {
   const [doc, setDoc] = useState(null)
-  const [idx, setIdx] = useState(DEFAULT_VEHICLE_INDEX)
+  const [vehicle, setVehicle] = useState(CURVE_VEHICLES[DEFAULT_VEHICLE_INDEX])
+  const [year, setYear] = useState(DEFAULT_YEAR)
   const [msrp, setMsrp] = useState(CURVE_VEHICLES[DEFAULT_VEHICLE_INDEX].msrp)
   const [milesPerYear, setMiles] = useState(12000)
   const [discountRate, setRate] = useState(0.05)
@@ -50,18 +52,18 @@ export default function Decide() {
     loadCurves().then(setDoc)
   }, [])
 
-  const vehicle = CURVE_VEHICLES[idx]
   const isEv = vehicle.powertrain === 'EV'
 
-  // Switching vehicles refills MSRP with that model's representative price.
-  function pickVehicle(nextIdx) {
-    setIdx(nextIdx)
-    setMsrp(CURVE_VEHICLES[nextIdx].msrp)
+  // Picking a quick-pick chip refills its representative MSRP; a free-text
+  // catalog pick keeps the current MSRP (the catalog has no price).
+  const selectVehicle = (v) => {
+    setVehicle(v)
+    if (typeof v.msrp === 'number') setMsrp(v.msrp)
   }
 
   const { result, resolved, error } = useMemo(() => {
     if (!doc) return { result: null, resolved: null, error: null }
-    const resolvedCurve = resolveCurve({ ...vehicle, year: DEFAULT_YEAR }, doc)
+    const resolvedCurve = resolveCurve({ ...vehicle, year }, doc)
     const input = {
       msrp,
       milesPerYear,
@@ -76,7 +78,7 @@ export default function Decide() {
     } catch (e) {
       return { result: null, resolved: resolvedCurve, error: e.message }
     }
-  }, [doc, idx, msrp, milesPerYear, discountRate, incentive, residualSpread, fuelPricePerGallon, electricityPricePerKwh]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [doc, vehicle, year, msrp, milesPerYear, discountRate, incentive, residualSpread, fuelPricePerGallon, electricityPricePerKwh]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
@@ -90,34 +92,17 @@ export default function Decide() {
         </p>
       </header>
 
-      {/* Vehicle + price */}
-      <section className="mb-6 grid gap-4 rounded-2xl border border-border bg-surface-raised/60 p-4 sm:grid-cols-2 sm:p-5">
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-ink">Vehicle</span>
-          <select
-            value={idx}
-            onChange={(e) => pickVehicle(Number(e.target.value))}
-            className="w-full rounded-lg border border-border bg-navy px-3 py-2.5 text-ink"
-          >
-            {CURVE_VEHICLES.map((v, i) => (
-              <option key={`${v.make}-${v.model}`} value={i}>
-                {DEFAULT_YEAR} {v.make} {v.model} · {v.powertrain}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-ink">MSRP</span>
-          <input
-            type="number"
-            value={msrp}
-            min={10000}
-            max={250000}
-            step={500}
-            onChange={(e) => setMsrp(Number(e.target.value))}
-            className="tabular w-full rounded-lg border border-border bg-navy px-3 py-2.5 text-ink"
-          />
-        </label>
+      {/* Vehicle: fuzzy catalog search + year + price, with quick-pick chips */}
+      <section className="mb-6">
+        <VehicleSelect
+          vehicle={vehicle}
+          year={year}
+          msrp={msrp}
+          onVehicle={selectVehicle}
+          onYear={setYear}
+          onMsrp={setMsrp}
+          chips={CURVE_VEHICLES}
+        />
       </section>
 
       {/* Verdict — shape comes entirely from result.verdict */}

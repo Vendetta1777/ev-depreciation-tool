@@ -368,8 +368,18 @@ test('a TODO side yields no verdict and a per-side pending note', () => {
   const r = compareVehicles(todoSide, iceSide(), cp)
   assert.equal(r.verdict, null)
   assert.equal(r.a.ready, false)
-  assert.match(r.a.note, /pending/)
+  assert.equal(r.a.reason, 'pending')
+  assert.match(r.a.note, /published yet|todo/)
   assert.equal(r.b.ready, true)
+})
+
+test('a pre-2012 side is a clean refuse (not a crash) with reason refuse', () => {
+  const refused = evSide({ resolved: { curve: null, matchLevel: 'refuse', note: 'Retention data starts at model year 2012 — 2010 is out of range.' } })
+  const r = compareVehicles(refused, iceSide(), cp)
+  assert.equal(r.verdict, null)
+  assert.equal(r.a.ready, false)
+  assert.equal(r.a.reason, 'refuse')
+  assert.match(r.a.note, /2012/)
 })
 
 test('asymmetric provenance (exact 2026 vs segment 2025) is reported', () => {
