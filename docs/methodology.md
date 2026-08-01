@@ -106,7 +106,9 @@ which the tool exposes as inputs:
   number and walks away — leasing wins. This is the real story behind
   "EVs favor leasing." **It is a user assumption, not a sourced figure — its only
   honest default is 0** (a fair-value lease). Nothing on this site derives it for
-  you.
+  you. We looked for a citable typical range and there isn't one: captive-lender
+  residual assumptions aren't published, so rather than invent a "typical" spread
+  the tool leaves it entirely to you.
 - **Money-factor markup** — a lease APR above your discount rate makes leasing
   worse.
 - **Fees** — an acquisition fee (default **$895**, typically ~$595–$1,095) and a
