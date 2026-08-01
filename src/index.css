@@ -30,6 +30,54 @@
   --color-ink-muted: #8ba0b8;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   /decide editorial theme — warm near-black + a single amber accent.
+   Scoped: it overrides the theme CSS variables only within .decide, so
+   every utility class used on that page (and its shared children) recolors
+   without touching any other route.
+   ───────────────────────────────────────────────────────────── */
+.decide {
+  --color-navy: #14110c;
+  --color-navy-800: #191510;
+  --color-navy-700: #201b13;
+  --color-navy-600: #2a2318;
+  --color-surface: #14110c;
+  --color-surface-raised: #1b1710;
+  --color-border: #2c2619;
+  --color-ink: #ece6da;
+  --color-ink-muted: #9a9081;
+  /* the single accent, plus its light/dark steps */
+  --color-teal: #c8873e;
+  --color-teal-400: #dda65e;
+  --color-teal-600: #a06d2c;
+  --color-warning: #bd934f;
+  --color-positive: #c8873e;
+  --color-negative: #b56a4a;
+
+  --rule: rgba(236, 230, 218, 0.1);
+  min-height: 100vh;
+  background-color: #14110c;
+  /* faint warm vignette, no blue */
+  background-image: radial-gradient(60rem 40rem at 15% -10%, rgba(200, 135, 62, 0.05), transparent 60%);
+}
+
+/* Hairline rule used instead of card borders on /decide. */
+.decide .rule {
+  border-color: var(--rule);
+}
+
+/* Left-to-right chart line draw on mount. */
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: var(--dash, 1200);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 html {

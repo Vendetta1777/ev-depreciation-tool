@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ComposedChart,
@@ -14,8 +14,109 @@ import { loadCurves, resolveCurve } from '../lib/curves.js'
 import { compute } from '../lib/finance.ts'
 import { CURVE_VEHICLES, DEFAULT_VEHICLE_INDEX, DEFAULT_YEAR } from '../data/curveVehicles.js'
 import { usd, pct } from '../utils/format.js'
-import { ProvenanceChip, Citation, Slider, StatRow } from '../components/uiBits.jsx'
 import VehicleSelect from '../components/VehicleSelect.jsx'
+
+// ── A figure that counts up on mount and tweens on change ─────────────
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
+function Figure({ value, from0 = false, className }) {
+  const [display, setDisplay] = useState(from0 ? 0 : value)
+  const cur = useRef(from0 ? 0 : value)
+  useEffect(() => {
+    const start = cur.current
+    const end = value
+    if (start === end) return
+    let raf
+    let t0 = null
+    const dur = 550
+    const step = (ts) => {
+      if (t0 === null) t0 = ts
+      const p = Math.min((ts - t0) / dur, 1)
+      const v = start + (end - start) * easeOutCubic(p)
+      cur.current = v
+      setDisplay(v)
+      if (p < 1) raf = requestAnimationFrame(step)
+      else cur.current = end
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [value])
+  return <span className={className}>{usd(Math.round(display))}</span>
+}
+
+// ── Provenance as a quiet annotation, not a badge ─────────────────────
+function Chip({ provenance }) {
+  const pub = provenance.evidence === 'published'
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+      <span className={`h-1.5 w-1.5 rounded-full ${pub ? 'bg-teal' : 'bg-warning'}`} aria-hidden />
+      {pub ? 'Published' : 'Estimated'}
+    </span>
+  )
+}
+
+function Cite({ provenance }) {
+  return (
+    <p className="rule mt-5 border-t pt-3 text-xs leading-relaxed text-ink-muted">
+      Source:{' '}
+      {provenance.sourceUrl ? (
+        <a
+          href={provenance.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-teal underline decoration-dotted underline-offset-2 hover:text-teal-400"
+        >
+          {provenance.source}
+        </a>
+      ) : (
+        provenance.source
+      )}
+      {provenance.sourceYear ? ` (${provenance.sourceYear}).` : '.'}{' '}
+      {provenance.note && <span className="text-warning">{provenance.note} </span>}
+      {provenance.sourceNote}
+    </p>
+  )
+}
+
+// ── Dense, aligned figure row (label left, mono number right) ─────────
+function Row({ label, value, strong }) {
+  return (
+    <div className="rule flex items-baseline justify-between gap-4 border-b py-1.5 last:border-0">
+      <span className="text-sm text-ink-muted">{label}</span>
+      <Figure
+        value={value}
+        className={`font-mono text-sm tabular-nums ${strong ? 'font-semibold text-teal' : 'text-ink'}`}
+      />
+    </div>
+  )
+}
+
+function Rail({ label, help, live, value, min, max, step, onChange, format }) {
+  return (
+    <label className="block">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-sm text-ink">{label}</span>
+        <span className="font-mono text-sm tabular-nums text-teal">{format(value)}</span>
+      </div>
+      {help && <p className="mt-1 text-xs leading-relaxed text-ink-muted">{help}</p>}
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-2 w-full accent-teal"
+      />
+      <span className={`mt-1 block text-[11px] tracking-wide ${live ? 'text-teal' : 'text-ink-muted'}`}>
+        {live ? 'can flip the verdict' : 'affects cost, not the verdict'}
+      </span>
+    </label>
+  )
+}
+
+const Eyebrow = ({ children }) => (
+  <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted">{children}</p>
+)
 
 // ── One readable breakeven sentence per live variable ─────────────────
 function breakevenSentence(name, be, verdict) {
@@ -54,8 +155,6 @@ export default function Decide() {
 
   const isEv = vehicle.powertrain === 'EV'
 
-  // Picking a quick-pick chip refills its representative MSRP; a free-text
-  // catalog pick keeps the current MSRP (the catalog has no price).
   const selectVehicle = (v) => {
     setVehicle(v)
     if (typeof v.msrp === 'number') setMsrp(v.msrp)
@@ -81,225 +180,225 @@ export default function Decide() {
   }, [doc, vehicle, year, msrp, milesPerYear, discountRate, incentive, residualSpread, fuelPricePerGallon, electricityPricePerKwh]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-ink sm:text-3xl">Buy or lease?</h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          Five-year cost, from published depreciation data. Every figure is cited.{' '}
-          <Link to="/methodology" className="text-teal-400 underline decoration-dotted underline-offset-2 hover:text-teal">
-            How this is computed →
-          </Link>
-        </p>
-      </header>
+    <div className="decide">
+      <div className="mx-auto max-w-4xl px-5 py-10 sm:px-6 sm:py-16">
+        <header className="mb-9">
+          <h1 className="font-serif text-4xl leading-none text-ink sm:text-5xl">Buy or lease?</h1>
+          <p className="mt-3 text-sm text-ink-muted">
+            Five-year cost, from published depreciation data — every figure cited.{' '}
+            <Link
+              to="/methodology"
+              className="text-teal underline decoration-dotted underline-offset-2 hover:text-teal-400"
+            >
+              How this is computed →
+            </Link>
+          </p>
+        </header>
 
-      {/* Vehicle: fuzzy catalog search + year + price, with quick-pick chips */}
-      <section className="mb-6">
-        <VehicleSelect
-          vehicle={vehicle}
-          year={year}
-          msrp={msrp}
-          onVehicle={selectVehicle}
-          onYear={setYear}
-          onMsrp={setMsrp}
-          chips={CURVE_VEHICLES}
-        />
-      </section>
-
-      {/* Verdict — shape comes entirely from result.verdict */}
-      {result ? (
-        <VerdictBlock result={result} isEv={isEv} />
-      ) : (
-        <UnavailableBlock resolved={resolved} error={error} />
-      )}
-
-      {/* Sliders */}
-      <section className="mt-6 rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-5">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-muted">
-          Adjust the assumptions
-        </h2>
-        {/* The key lever: with a fair lease, buy and lease are equal by
-            construction — this spread is what actually makes a lease win. */}
-        <div className="mb-5 rounded-xl border border-teal/25 bg-teal/5 p-4">
-          <Slider
-            label="Lender's residual optimism"
-            help="How optimistic is the lender's assumed resale value vs. the market forecast? (a subvented residual is the main reason a lease wins — this is your assumption, not sourced data)"
-            live={!!result?.verdict.liveVariables.includes('residualSpread')}
-            value={residualSpread}
-            min={0}
-            max={0.15}
-            step={0.01}
-            onChange={setSpread}
-            format={(v) => `+${(v * 100).toFixed(0)}% of MSRP`}
+        <div className="mb-10">
+          <VehicleSelect
+            vehicle={vehicle}
+            year={year}
+            msrp={msrp}
+            onVehicle={selectVehicle}
+            onYear={setYear}
+            onMsrp={setMsrp}
+            chips={CURVE_VEHICLES}
           />
         </div>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Slider
-            label="Miles per year"
-            live={!!result?.verdict.liveVariables.includes('milesPerYear')}
-            value={milesPerYear}
-            min={0}
-            max={30000}
-            step={500}
-            onChange={setMiles}
-            format={(v) => `${v.toLocaleString()} mi`}
-          />
-          <Slider
-            label="Discount rate"
-            live={!!result?.verdict.liveVariables.includes('discountRate')}
-            value={discountRate}
-            min={0}
-            max={0.15}
-            step={0.005}
-            onChange={setRate}
-            format={(v) => pct(v, 1)}
-          />
-          <Slider
-            label={isEv ? 'Electricity ($/kWh)' : 'Fuel ($/gal)'}
-            live={!!result?.verdict.liveVariables.includes('fuelPricePerGallon')}
-            value={isEv ? electricityPricePerKwh : fuelPricePerGallon}
-            min={isEv ? 0.05 : 2}
-            max={isEv ? 0.4 : 7}
-            step={isEv ? 0.01 : 0.1}
-            onChange={isEv ? setElec : setFuel}
-            format={(v) => `$${v.toFixed(2)}`}
-          />
-          <Slider
-            label="Upfront incentive"
-            live={!!result?.verdict.liveVariables.includes('incentive')}
-            value={incentive}
-            min={0}
-            max={15000}
-            step={250}
-            onChange={setIncentive}
-            format={(v) => usd(v)}
-          />
-        </div>
-      </section>
+
+        {result ? (
+          <VerdictBlock result={result} isEv={isEv} residualSpread={residualSpread} />
+        ) : (
+          <UnavailableBlock resolved={resolved} error={error} />
+        )}
+
+        {/* Sliders */}
+        <section className="mt-12">
+          <Eyebrow>Adjust the assumptions</Eyebrow>
+          <div className="mb-8 rounded-sm border border-teal/30 bg-teal/[0.05] p-4 sm:p-5">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-teal">
+              The lever that decides it
+            </p>
+            <Rail
+              label="Lender's residual optimism"
+              help="How optimistic is the lender's assumed resale value vs. the market forecast? A subvented residual is the main reason a lease wins — this is your assumption, not sourced data."
+              live={!!result?.verdict.liveVariables.includes('residualSpread')}
+              value={residualSpread}
+              min={0}
+              max={0.15}
+              step={0.01}
+              onChange={setSpread}
+              format={(v) => `+${(v * 100).toFixed(0)}% of MSRP`}
+            />
+          </div>
+          <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+            <Rail
+              label="Miles per year"
+              live={!!result?.verdict.liveVariables.includes('milesPerYear')}
+              value={milesPerYear}
+              min={0}
+              max={30000}
+              step={500}
+              onChange={setMiles}
+              format={(v) => `${v.toLocaleString()} mi`}
+            />
+            <Rail
+              label="Discount rate"
+              live={!!result?.verdict.liveVariables.includes('discountRate')}
+              value={discountRate}
+              min={0}
+              max={0.15}
+              step={0.005}
+              onChange={setRate}
+              format={(v) => pct(v, 1)}
+            />
+            <Rail
+              label={isEv ? 'Electricity ($/kWh)' : 'Fuel ($/gal)'}
+              live={!!result?.verdict.liveVariables.includes('fuelPricePerGallon')}
+              value={isEv ? electricityPricePerKwh : fuelPricePerGallon}
+              min={isEv ? 0.05 : 2}
+              max={isEv ? 0.4 : 7}
+              step={isEv ? 0.01 : 0.1}
+              onChange={isEv ? setElec : setFuel}
+              format={(v) => `$${v.toFixed(2)}`}
+            />
+            <Rail
+              label="Upfront incentive"
+              live={!!result?.verdict.liveVariables.includes('incentive')}
+              value={incentive}
+              min={0}
+              max={15000}
+              step={250}
+              onChange={setIncentive}
+              format={(v) => usd(v)}
+            />
+          </div>
+        </section>
+      </div>
     </div>
   )
 }
 
-function VerdictBlock({ result, isEv }) {
+function VerdictBlock({ result, isEv, residualSpread }) {
   const { verdict, npv, tco, breakeven, band } = result
-  const winnerTeal = verdict.winnerLabel.startsWith('Lease')
-  const sentences = verdict.liveVariables
-    .map((n) => breakevenSentence(n, breakeven, verdict))
-    .filter(Boolean)
+  const sentences = verdict.liveVariables.map((n) => breakevenSentence(n, breakeven, verdict)).filter(Boolean)
+  const sig = band.years.map((y) => y.value).join(',')
+  const chartData = useMemo(() => chartDataOf(result), [sig]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
-      {/* Headline */}
-      <section className="rounded-2xl border border-border bg-surface-raised p-5 sm:p-7">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <ProvenanceChip provenance={verdict.provenance} />
+      {/* Verdict — dominant, full width, no card */}
+      <section>
+        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <Chip provenance={verdict.provenance} />
           {verdict.provenance.matchLevel === 'segment' && (
-            <span className="rounded-full bg-navy px-2.5 py-1 text-xs text-ink-muted">
-              segment average
-            </span>
+            <span className="text-[11px] uppercase tracking-[0.14em] text-ink-muted">Segment average</span>
           )}
         </div>
-        <p className="text-2xl font-extrabold leading-tight text-ink sm:text-4xl">
-          <span className={winnerTeal ? 'text-teal' : 'text-positive'}>{verdict.winnerLabel}</span>{' '}
-          You save{' '}
-          <span className="tabular">{usd(verdict.amount)}</span> over {verdict.horizonYears} years.
-        </p>
-        {/* Breakeven line directly under the verdict */}
-        {sentences.length > 0 ? (
-          <p className="mt-3 text-sm text-ink-muted">
-            <span className="font-semibold text-ink">Breakeven: </span>
-            {sentences[0]}
-            {sentences.length > 1 && (
-              <span className="ml-1">
-                {sentences.slice(1).map((s) => (
-                  <span key={s} className="ml-1">
-                    {s}
-                  </span>
-                ))}
-              </span>
-            )}
+        <h2 className="font-serif text-[2.5rem] leading-[1.06] text-ink sm:text-6xl">
+          <span className="text-teal">{verdict.winnerLabel}</span>{' '}
+          <span className="text-ink-muted">You save</span>{' '}
+          <Figure value={verdict.amount} from0 className="tabular-nums text-ink" />{' '}
+          <span className="text-ink-muted">over {verdict.horizonYears} years.</span>
+        </h2>
+
+        {/* The verdict is only as real as its assumptions — say so plainly. */}
+        {residualSpread === 0 ? (
+          <p className="mt-5 max-w-2xl border-l-2 border-teal/60 pl-3 text-sm leading-relaxed text-ink-muted">
+            <span className="text-ink">This is the fair-lease default.</span> With no residual spread, buying and
+            leasing are equal by construction — so this gap is essentially the lease fees ({usd(npv.leaseFeesPV)}),
+            an assumption baked in, not a finding about the car. <span className="text-ink">The residual-spread
+            slider below is what actually decides it.</span>
           </p>
         ) : (
-          <p className="mt-3 text-sm text-ink-muted">
-            No single assumption flips this verdict in a realistic range.
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink-muted">
+            Reflects your assumed residual spread of{' '}
+            <span className="text-ink">+{(residualSpread * 100).toFixed(0)}% of MSRP</span> — your input, not
+            sourced data.
           </p>
         )}
-        <Citation provenance={verdict.provenance} />
+
+        {sentences.length > 0 ? (
+          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ink-muted">
+            <span className="font-medium text-ink">Breakeven — </span>
+            {sentences.join(' ')}
+          </p>
+        ) : (
+          <p className="mt-6 text-sm text-ink-muted">No single assumption flips this verdict in a realistic range.</p>
+        )}
+        <Cite provenance={verdict.provenance} />
       </section>
 
-      {/* Fan chart + NPV */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-5">
-        <section className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-5 lg:col-span-3">
-          <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-ink">Projected resale value</h2>
-            {band.flat && <span className="text-xs text-ink-muted">source spread unavailable — shown as a line</span>}
+      <hr className="rule my-10 border-t" />
+
+      {/* Supporting: chart + present-value table, denser */}
+      <div className="grid gap-10 lg:grid-cols-5">
+        <section className="lg:col-span-3">
+          <div className="mb-3 flex items-baseline justify-between">
+            <Eyebrow>Projected resale value</Eyebrow>
+            {band.flat && <span className="text-[11px] text-ink-muted">spread unavailable — line only</span>}
           </div>
-          <div className="h-64 w-full">
+          <div className="h-56 w-full">
             <ResponsiveContainer>
-              <ComposedChart data={chartDataOf(result)} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-                <CartesianGrid stroke="#1d3c5f" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="year" stroke="#8ba0b8" fontSize={12} tickFormatter={(y) => `Y${y}`} />
-                <YAxis
-                  stroke="#8ba0b8"
-                  fontSize={12}
-                  width={54}
-                  tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
-                />
+              <ComposedChart data={chartData} margin={{ top: 6, right: 6, left: 6, bottom: 0 }}>
+                <CartesianGrid stroke="#2c2619" strokeDasharray="2 4" vertical={false} />
+                <XAxis dataKey="year" stroke="#5f584a" fontSize={11} tickFormatter={(y) => `Y${y}`} />
+                <YAxis stroke="#5f584a" fontSize={11} width={48} tickFormatter={(v) => `$${Math.round(v / 1000)}k`} />
                 <Tooltip
-                  contentStyle={{ background: '#0d1b2a', border: '1px solid #1d3c5f', borderRadius: 12 }}
-                  labelStyle={{ color: '#8ba0b8' }}
+                  contentStyle={{ background: '#1b1710', border: '1px solid #2c2619', borderRadius: 8, fontSize: 12 }}
+                  labelStyle={{ color: '#9a9081' }}
+                  itemStyle={{ color: '#ece6da' }}
                   formatter={(val, name) => [usd(val), name === 'mid' ? 'Value' : name]}
                   labelFormatter={(y) => `Year ${y}`}
                 />
                 <Area dataKey="low" stackId="band" stroke="none" fill="transparent" isAnimationActive={false} />
-                <Area
-                  dataKey="band"
-                  stackId="band"
-                  stroke="none"
-                  fill="#00b4d8"
-                  fillOpacity={0.18}
-                  isAnimationActive={false}
-                />
+                <Area dataKey="band" stackId="band" stroke="none" fill="#c8873e" fillOpacity={0.13} isAnimationActive={false} />
                 <Line
                   dataKey="mid"
-                  stroke="#38cdf0"
-                  strokeWidth={2.5}
+                  stroke="#d3a05a"
+                  strokeWidth={2}
                   dot={false}
-                  isAnimationActive={false}
+                  isAnimationActive
+                  animationDuration={900}
+                  animationEasing="ease-out"
                 />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-5 lg:col-span-2">
-          <h2 className="mb-2 text-sm font-semibold text-ink">5-year present value</h2>
-          <StatRow label="Buy" value={usd(npv.buyNPV)} strong={verdict.winner === 'a'} />
-          <StatRow label="Lease" value={usd(npv.leaseNPV)} strong={verdict.winner === 'b'} />
-          <StatRow label="Resale at year 5" value={usd(npv.resaleValue)} />
-          <StatRow label="Monthly lease" value={usd(npv.monthlyLease)} />
+        <section className="lg:col-span-2">
+          <Eyebrow>Five-year present value</Eyebrow>
+          <Row label="Buy" value={npv.buyNPV} strong={verdict.winner === 'a'} />
+          <Row label="Lease" value={npv.leaseNPV} strong={verdict.winner === 'b'} />
+          <Row label="Resale at year 5" value={npv.resaleValue} />
+          <Row label="Monthly lease" value={npv.monthlyLease} />
         </section>
       </div>
 
+      <hr className="rule my-10 border-t" />
+
       {/* TCO */}
-      <section className="mt-6 rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-5">
-        <h2 className="mb-2 text-sm font-semibold text-ink">Total cost of ownership (5 years)</h2>
-        <div className="grid gap-x-8 sm:grid-cols-2">
+      <section>
+        <Eyebrow>Total cost of ownership · 5 years</Eyebrow>
+        <div className="grid gap-x-10 sm:grid-cols-2">
           <div>
-            <StatRow label="Depreciation" value={usd(tco.depreciation)} />
-            <StatRow label={isEv ? 'Charging' : 'Fuel'} value={usd(tco.energy)} />
-            <StatRow label="Insurance" value={usd(tco.insurance)} />
+            <Row label="Depreciation" value={tco.depreciation} />
+            <Row label={isEv ? 'Charging' : 'Fuel'} value={tco.energy} />
+            <Row label="Insurance" value={tco.insurance} />
           </div>
           <div>
-            <StatRow label="Maintenance" value={usd(tco.maintenance)} />
-            <StatRow label="Registration" value={usd(tco.registration)} />
-            <StatRow label="Incentives" value={usd(tco.incentives)} />
+            <Row label="Maintenance" value={tco.maintenance} />
+            <Row label="Registration" value={tco.registration} />
+            <Row label="Incentives" value={tco.incentives} />
           </div>
         </div>
-        <div className="mt-2 flex items-center justify-between border-t border-border pt-3">
-          <span className="text-sm font-semibold text-ink">Total</span>
-          <span className="tabular text-lg font-bold text-ink">{usd(tco.total)}</span>
+        <div className="rule mt-3 flex items-baseline justify-between border-t pt-3">
+          <span className="text-sm font-medium text-ink">Total</span>
+          <Figure value={tco.total} className="font-mono text-xl tabular-nums font-semibold text-ink" />
         </div>
-        <Citation provenance={tco.provenance} />
+        <Cite provenance={tco.provenance} />
       </section>
     </>
   )
@@ -308,12 +407,10 @@ function VerdictBlock({ result, isEv }) {
 function UnavailableBlock({ resolved, error }) {
   const pending = resolved && resolved.matchLevel !== 'refuse'
   return (
-    <section className="rounded-2xl border border-warning/40 bg-warning/5 p-5 sm:p-7">
-      <h2 className="text-xl font-bold text-warning">
-        {pending ? 'Figures pending' : 'Not covered'}
-      </h2>
-      <p className="mt-2 text-sm text-ink">{resolved?.note ?? error}</p>
-      <p className="mt-3 text-xs text-ink-muted">
+    <section className="rule border-y py-10">
+      <h2 className="font-serif text-3xl text-ink">{pending ? 'Figures pending' : 'Not covered'}</h2>
+      <p className="mt-3 text-sm text-ink">{resolved?.note ?? error}</p>
+      <p className="mt-2 text-xs text-ink-muted">
         {pending
           ? "This segment exists but its retention figures aren't published yet, so the tool won't guess."
           : 'This vehicle falls outside what published data covers.'}
@@ -322,7 +419,6 @@ function UnavailableBlock({ resolved, error }) {
   )
 }
 
-// Rebuild chart data inside VerdictBlock scope.
 function chartDataOf(result) {
   const msrp0 = result.band.years.length ? result.band.years[0].value / result.band.years[0].mid : 0
   return [
