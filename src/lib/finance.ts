@@ -513,11 +513,12 @@ export function breakeven(input: FinanceInput, resolved: ResolvedCurve): Breakev
 
 // ── Verdict presentation (drives the UI; Phase F swaps the shape) ─────
 
-export type VerdictKind = 'buy-vs-lease'
+export type VerdictKind = 'buy-vs-lease' | 'ev-vs-ice'
 export type BreakevenVarName =
   | 'milesPerYear'
   | 'discountRate'
   | 'fuelPricePerGallon'
+  | 'electricityPricePerKwh'
   | 'incentive'
   | 'residualSpread'
 
@@ -608,5 +609,171 @@ export function compute(input: FinanceInput, resolved: ResolvedCurve): ComputeRe
     breakeven: be,
     verdict: presentVerdict(input, npv, be),
     provenance: provenanceOf(resolved),
+  }
+}
+
+// ── EV vs ICE — compare two vehicles' 5-year total cost (Phase F) ─────
+//
+// Verdict = which vehicle costs less to own over the horizon (TCO), NOT
+// buy-vs-lease. The two vehicles are chosen by the caller; energy price is a
+// live lever (fuel drives the ICE side, electricity the EV side), so it can
+// flip the verdict. Reuses VerdictPresentation with kind 'ev-vs-ice'.
+
+export interface CompareSide {
+  label: string
+  resolved: ResolvedCurve
+  msrp: number
+  powertrain: string
+  /** State/local incentive only — the federal EV credit expired 2025-09-30, so default 0. */
+  incentive?: number
+  mpg?: number
+  kwhPer100mi?: number
+  insurancePerYear?: number
+  maintenancePerYear?: number
+}
+
+export interface CompareParams {
+  milesPerYear: number
+  years?: number
+  fuelPricePerGallon?: number
+  electricityPricePerKwh?: number
+}
+
+export interface CompareSideResult {
+  label: string
+  ready: boolean
+  tco: TcoResult | null
+  provenance: Provenance | null
+  /** Set when the side is not computable (pending / refuse) — no verdict then. */
+  note: string | null
+}
+
+export interface CompareBreakeven {
+  milesPerYear: number | null
+  fuelPricePerGallon: number | null
+  electricityPricePerKwh: number | null
+  incentive: number | null
+}
+
+export interface ProvenanceComparison {
+  matchLevelDiffers: boolean
+  sourceYearDiffers: boolean
+  /** Human note when the two sides were sourced differently (vintage / exact-vs-segment). */
+  note: string | null
+}
+
+export interface CompareResult {
+  a: CompareSideResult
+  b: CompareSideResult
+  verdict: VerdictPresentation | null
+  breakeven: CompareBreakeven | null
+  provenanceComparison: ProvenanceComparison | null
+}
+
+function sideInput(side: CompareSide, p: CompareParams): FinanceInput {
+  return {
+    msrp: side.msrp,
+    powertrain: side.powertrain,
+    milesPerYear: p.milesPerYear,
+    years: p.years,
+    incentive: side.incentive ?? 0,
+    fuelPricePerGallon: p.fuelPricePerGallon,
+    electricityPricePerKwh: p.electricityPricePerKwh,
+    mpg: side.mpg,
+    kwhPer100mi: side.kwhPer100mi,
+    insurancePerYear: side.insurancePerYear,
+    maintenancePerYear: side.maintenancePerYear,
+  }
+}
+
+function sideResult(side: CompareSide, p: CompareParams): CompareSideResult {
+  try {
+    assertComputable(side.resolved)
+    return {
+      label: side.label,
+      ready: true,
+      tco: tco(sideInput(side, p), side.resolved),
+      provenance: provenanceOf(side.resolved),
+      note: null,
+    }
+  } catch (e) {
+    return {
+      label: side.label,
+      ready: false,
+      tco: null,
+      provenance: side.resolved.curve ? provenanceOf(side.resolved) : null,
+      note: side.resolved.note ?? (e as Error).message,
+    }
+  }
+}
+
+function describeProvenance(p: Provenance): string {
+  const kind = p.matchLevel === 'exact' ? 'an exact per-model figure' : 'a segment average'
+  return `${kind} (${p.sourceYear ?? 'undated'})`
+}
+
+export function compareVehicles(a: CompareSide, b: CompareSide, p: CompareParams): CompareResult {
+  const ra = sideResult(a, p)
+  const rb = sideResult(b, p)
+
+  // Both sides must be ready; otherwise no verdict (per-side "figures pending").
+  if (!ra.ready || !rb.ready || !ra.tco || !rb.tco) {
+    return { a: ra, b: rb, verdict: null, breakeven: null, provenanceComparison: null }
+  }
+
+  const years = p.years ?? FINANCE_DEFAULTS.years
+  const winnerIsA = ra.tco.total < rb.tco.total
+  const amount = Math.abs(ra.tco.total - rb.tco.total)
+
+  // total(a) − total(b) as a function of a mutated param / per-side incentive.
+  const diff = (over: Partial<CompareParams>, aInc?: number, bInc?: number) => {
+    const pp = { ...p, ...over }
+    const ta = tco(sideInput({ ...a, incentive: aInc ?? a.incentive }, pp), a.resolved)
+    const tb = tco(sideInput({ ...b, incentive: bInc ?? b.incentive }, pp), b.resolved)
+    return ta.total - tb.total
+  }
+  const miles = solveFlip((v) => diff({ milesPerYear: v }), 0, 100000)
+  const fuel = solveFlip((v) => diff({ fuelPricePerGallon: v }), 0, 15)
+  const elec = solveFlip((v) => diff({ electricityPricePerKwh: v }), 0, 1)
+  const evSide = a.powertrain.toUpperCase() === 'EV' ? 'a' : b.powertrain.toUpperCase() === 'EV' ? 'b' : null
+  let incentive: number | null = null
+  if (evSide === 'a') incentive = solveFlip((v) => diff({}, v, undefined), 0, 30000)
+  else if (evSide === 'b') incentive = solveFlip((v) => diff({}, undefined, v), 0, 30000)
+
+  const live: BreakevenVarName[] = []
+  if (miles !== null) live.push('milesPerYear')
+  if (fuel !== null) live.push('fuelPricePerGallon')
+  if (elec !== null) live.push('electricityPricePerKwh')
+  if (incentive !== null) live.push('incentive')
+
+  const winnerLabel = winnerIsA ? a.label : b.label
+  const verdict: VerdictPresentation = {
+    kind: 'ev-vs-ice',
+    pair: { a: a.label, b: b.label },
+    winner: winnerIsA ? 'a' : 'b',
+    winnerLabel,
+    loserLabel: winnerIsA ? b.label : a.label,
+    amount,
+    horizonYears: years,
+    headline: `The ${winnerLabel} costs ${usd0(amount)} less to own over ${years} years.`,
+    liveVariables: live,
+    provenance: (winnerIsA ? ra.provenance : rb.provenance)!,
+  }
+
+  const pa = ra.provenance!
+  const pb = rb.provenance!
+  const matchLevelDiffers = pa.matchLevel !== pb.matchLevel
+  const sourceYearDiffers = pa.sourceYear !== pb.sourceYear
+  const provNote =
+    matchLevelDiffers || sourceYearDiffers
+      ? `Heads-up: ${a.label} uses ${describeProvenance(pa)} and ${b.label} uses ${describeProvenance(pb)}. Part of the gap may reflect how the two figures were sourced (exact-vs-segment, dataset vintage), not the vehicles themselves.`
+      : null
+
+  return {
+    a: ra,
+    b: rb,
+    verdict,
+    breakeven: { milesPerYear: miles, fuelPricePerGallon: fuel, electricityPricePerKwh: elec, incentive },
+    provenanceComparison: { matchLevelDiffers, sourceYearDiffers, note: provNote },
   }
 }

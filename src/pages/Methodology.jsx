@@ -31,13 +31,9 @@ export default function Methodology() {
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-ink sm:text-3xl">Methodology</h1>
         <p className="mt-2 text-sm text-ink-muted sm:text-base">
-          This tool answers one question: for a specific car, is it cheaper to{' '}
-          <Term>buy or lease</Term> over five years? It uses published depreciation data — not a
-          trained model — and every number traces back to this page.
-        </p>
-        <p className="mt-3 rounded-lg border border-border bg-surface-raised/60 p-3 text-xs text-ink-muted">
-          A second mode, <Term>EV vs. an equivalent gas car</Term> (where fuel price does swing the
-          result), is planned for a later phase and is not live yet.
+          Two modes, both over five years: <Term>buy vs. lease</Term> one car, and{' '}
+          <Term>EV vs. gas</Term> — which of two vehicles costs less to own. Both use published
+          depreciation data — not a trained model — and every number traces back to this page.
         </p>
       </header>
 
@@ -137,6 +133,38 @@ export default function Methodology() {
           <Term>not a finding about the vehicle</Term>. A lease only wins once you raise the residual
           spread or otherwise tell the tool the deal deviates from fair.
         </p>
+      </Section>
+
+      <Section id="ev-vs-gas" title="The EV-vs-gas comparison">
+        <p>
+          The second mode compares the <Term>five-year total cost of ownership</Term> of two
+          vehicles <Term>you choose</Term> — depreciation + energy + maintenance + insurance +
+          registration − incentives — and names whichever costs less. It is not buy-vs-lease.
+        </p>
+        <ul className="ml-4 list-disc space-y-2">
+          <li>
+            <Term>You pick both vehicles.</Term> &ldquo;Suggest an equivalent&rdquo; offers an
+            opposite-powertrain match by price, but that is a suggestion, not a claim the two are
+            equivalent.
+          </li>
+          <li>
+            <Term>Energy price is live.</Term> Gas drives the gas side and electricity the EV side,
+            so either can flip the verdict; breakeven reports the value at which the winner changes.
+          </li>
+          <li>
+            <Term>Incentives are state/local only.</Term> The federal EV tax credit expired
+            September 30, 2025, so the default is $0 — nothing hard-codes $7,500.
+          </li>
+          <li>
+            <Term>Both sides need real figures.</Term> If either resolves to a pending curve, that
+            side shows &ldquo;figures pending&rdquo; and there is no verdict.
+          </li>
+          <li>
+            <Term>Provenance mix is flagged.</Term> Comparing an exact 2026 per-model row against a
+            2025 segment average carries a vintage bias; when the two sides differ that way, the
+            result says so.
+          </li>
+        </ul>
       </Section>
 
       <Section id="limitations" title="Known limitations">

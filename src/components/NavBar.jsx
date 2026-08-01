@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const LINKS = [
   { to: '/', label: 'Home', end: true },
   { to: '/decide', label: 'Buy or Lease' },
+  { to: '/compare', label: 'EV vs Gas' },
   { to: '/methodology', label: 'Methodology' },
   { to: '/about', label: 'About' },
 ]

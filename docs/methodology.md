@@ -1,11 +1,9 @@
 # Methodology
 
-This tool answers one question: **for a specific car, is it cheaper to buy it or
-lease it over five years?** It uses published depreciation data — not a trained
-model — and every number on the site traces back to this page.
-
-> A second mode, **EV vs. an equivalent gas car** (where fuel price *does* swing
-> the result), is planned as a later phase and is **not** live yet.
+This tool has two modes, both over a five-year horizon: **buy vs. lease** one car,
+and **EV vs. gas** — which of two vehicles costs less to own. Both use published
+depreciation data — not a trained model — and every number traces back to this
+page.
 
 ## Where the retention curves come from
 
@@ -124,6 +122,33 @@ out-of-the-box verdict is **"Buy," by roughly the fees, for essentially every
 car** — this is a property of the fee assumptions, **not a finding about the
 vehicle**. A lease only wins once you tell the tool the lender is subventing the
 residual (raise the spread) or otherwise deviating from a fair deal.
+
+## The EV-vs-gas comparison
+
+The second mode compares the **five-year total cost of ownership** of two
+vehicles **you choose** — depreciation (from the curves) + energy + maintenance +
+insurance + registration − incentives — and names whichever costs less. It is
+*not* buy-vs-lease.
+
+- **You pick both vehicles.** The "Suggest an equivalent" button offers an
+  opposite-powertrain match by price, but that is a **suggestion, not a claim the
+  two are equivalent** — an equivalence judgment is yours to make.
+- **Energy price is a live lever.** Gas price drives the gas side and electricity
+  price the EV side, so either can flip the verdict — unlike buy-vs-lease, where
+  operating costs cancel. Breakeven reports the gas/electricity/mileage value at
+  which the winner changes.
+- **Incentives are state/local only.** The **federal EV tax credit expired on
+  September 30, 2025**, so the incentive default is **$0** and nothing hard-codes
+  $7,500. Enter your own state or local incentive if any.
+- **Both sides must have real figures.** If either vehicle resolves to a
+  not-yet-filled curve, that side shows "figures pending" and there is **no
+  verdict** — the tool won't compare against a number it doesn't have.
+- **Watch the provenance mix.** Comparing an exact named row (2026 per-model
+  dataset) against a segment fallback (2025 annual study) carries a built-in
+  vintage bias, and one side is an observed model figure while the other is a
+  category average. When the two sides differ this way, the result **says so** —
+  part of a gap can be an artifact of how the two numbers were sourced, not the
+  cars.
 
 ## Known limitations
 
