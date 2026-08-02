@@ -35,12 +35,12 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   /decide editorial theme — warm near-black + a single amber accent.
-   Scoped: it overrides the theme CSS variables only within .decide, so
+   Editorial theme — warm near-black + a single amber accent.
+   Scoped: it overrides the theme CSS variables only within .editorial, so
    every utility class used on that page (and its shared children) recolors
-   without touching any other route.
+   without touching any other route. Applied on /decide and /compare.
    ───────────────────────────────────────────────────────────── */
-.decide {
+.editorial {
   --color-navy: #14110c;
   --color-navy-800: #191510;
   --color-navy-700: #201b13;
@@ -65,8 +65,8 @@
   background-image: radial-gradient(60rem 40rem at 15% -10%, rgba(200, 135, 62, 0.05), transparent 60%);
 }
 
-/* Hairline rule used instead of card borders on /decide. */
-.decide .rule {
+/* Hairline rule used instead of card borders. */
+.editorial .rule {
   border-color: var(--rule);
 }
 
