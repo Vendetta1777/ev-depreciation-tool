@@ -34,13 +34,16 @@ export default function NavBar() {
 
   return (
     <header
-      className={`sticky top-0 z-20 border-b transition-colors ${
-        scrolled ? 'border-border bg-navy/80 backdrop-blur' : 'border-transparent bg-transparent'
+      className={`editorial-vars sticky top-0 z-20 border-b transition-colors ${
+        scrolled ? 'rule bg-navy/85 backdrop-blur' : 'border-transparent bg-transparent'
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <NavLink to="/" className="flex items-center gap-2 text-sm font-bold text-ink sm:text-base">
-          <span className="text-teal">◆</span> EV Depreciation Tool
+        <NavLink to="/" className="flex items-center gap-2 text-sm font-medium tracking-tight text-ink">
+          <span className="text-teal" aria-hidden>
+            ◆
+          </span>{' '}
+          EV Depreciation Tool
         </NavLink>
 
         {/* Desktop links */}

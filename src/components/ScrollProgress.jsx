@@ -10,7 +10,7 @@ export default function ScrollProgress() {
   return (
     <motion.div
       style={{ scaleX: width }}
-      className="fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-teal"
+      className="editorial-vars fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-teal"
     />
   )
 }

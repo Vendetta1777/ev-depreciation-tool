@@ -40,7 +40,10 @@
    every utility class used on that page (and its shared children) recolors
    without touching any other route. Applied on /decide and /compare.
    ───────────────────────────────────────────────────────────── */
-.editorial {
+/* Colour overrides only — no layout — so this can also theme the NavBar,
+   which sits outside the page wrappers and must not get a min-height. */
+.editorial,
+.editorial-vars {
   --color-navy: #14110c;
   --color-navy-800: #191510;
   --color-navy-700: #201b13;
@@ -59,6 +62,10 @@
   --color-negative: #b56a4a;
 
   --rule: rgba(236, 230, 218, 0.1);
+}
+
+/* Page wrapper: colours + the warm canvas. */
+.editorial {
   min-height: 100vh;
   background-color: #14110c;
   /* faint warm vignette, no blue */
@@ -66,7 +73,8 @@
 }
 
 /* Hairline rule used instead of card borders. */
-.editorial .rule {
+.editorial .rule,
+.editorial-vars .rule {
   border-color: var(--rule);
 }
 
