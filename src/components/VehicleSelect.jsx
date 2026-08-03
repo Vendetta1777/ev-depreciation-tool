@@ -7,14 +7,14 @@ const CURRENT_YEAR = 2026
  * One vehicle's full input: fuzzy make/model search + a YEAR input (feeds the
  * curve's age gate) + MSRP. Emits pieces via the on* callbacks.
  */
-export default function VehicleSelect({ title, vehicle, year, msrp, onVehicle, onYear, onMsrp, chips }) {
+export default function VehicleSelect({ title, vehicle, year, msrp, onVehicle, onYear, onMsrp, chips, animated = false }) {
   const selectedLabel = vehicle ? `${vehicle.make} ${vehicle.model}` : ''
   return (
     <div className="rounded-2xl border border-border bg-surface-raised/60 p-4 sm:p-5">
       {title && (
         <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-muted">{title}</span>
       )}
-      <VehicleCombobox selectedLabel={selectedLabel} chips={chips} onSelect={onVehicle} />
+      <VehicleCombobox selectedLabel={selectedLabel} chips={chips} onSelect={onVehicle} animated={animated} />
       {vehicle && (
         <p className="mt-2 text-xs text-ink-muted">
           Selected: <span className="text-ink">{year} {vehicle.make} {vehicle.model}</span> ·{' '}
